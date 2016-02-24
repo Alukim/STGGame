@@ -2,20 +2,20 @@
 #include <iostream>
 using namespace sf;
 
-void GameObj::SetPosition(int x, int y)
+void GameObject::SetPosition(int x, int y)
 {
 	rect.left = x;
 	rect.top = y;
 	shape.setPosition(x, y);
 }
 
-void GameObj::Resize(unsigned int width, unsigned int height)
+void GameObject::Resize(unsigned int width, unsigned int height)
 {
 	rect.width = width;
 	rect.height = height;
 }
 
-void GameObj::Scale(float prct_x, float prct_y)
+void GameObject::Scale(float prct_x, float prct_y)
 {
 	rect.width *= (prct_x / 100);
 	rect.height *= (prct_y / 100);
@@ -23,18 +23,18 @@ void GameObj::Scale(float prct_x, float prct_y)
 }
 
 
-void GameObj::Move(int x, int y)
+void GameObject::Move(int x, int y)
 {
 	rect.left += x;
 	rect.top += y;
 }
 
-IntRect GameObj::GetLayout() const
+IntRect GameObject::GetLayout() const
 {
 	return rect;
 }
 
-void GameObj::operator=(GameObj & ref)
+void GameObject::operator=(GameObject & ref)
 {
 	window = ref.window;
 	shape = ref.shape;
@@ -42,7 +42,7 @@ void GameObj::operator=(GameObj & ref)
 	shape.setTexture(ref.shape.getTexture(), true);
 }
 
-GameObj::GameObj(RenderWindow *win, Texture *text, int x, int y, bool adjust, int width, int height)
+GameObject::GameObject(RenderWindow *win, Texture *text, int x, int y, bool adjust, int width, int height)
 {
 	if ((window = win) == NULL)
 	{
@@ -75,7 +75,7 @@ GameObj::GameObj(RenderWindow *win, Texture *text, int x, int y, bool adjust, in
 	shape.setPosition(Vector2f(rect.left, rect.top));
 }
 
-GameObj::GameObj(RenderWindow *win, std::string path, unsigned int x, unsigned int y)
+GameObject::GameObject(RenderWindow *win, std::string path, unsigned int x, unsigned int y)
 {
 	sf::Texture temp;
 	if (!(window = win))
@@ -100,12 +100,12 @@ GameObj::GameObj(RenderWindow *win, std::string path, unsigned int x, unsigned i
 }
 
 
-void GameObj::Draw(void) const
+void GameObject::Draw(void) const
 {
 	window->draw(shape);
 }
 
 
-GameObj::~GameObj()
+GameObject::~GameObject()
 {
 }

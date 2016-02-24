@@ -1,11 +1,15 @@
 #include <SFML/Graphics.hpp>
-
+#include "Gates.h"
 
 int main(int argc, char **argv)
 {
+	XOR2 hehe;
+	hehe.SetCustomInput(0, 1);
+	hehe.SetCustomInput(1, 0);
+	hehe.Propagate();
 	const float fps = 1000 / 60;
 	const float ups = 1000 / 100;
-	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator", sf::Style::Fullscreen);
+	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator", sf::Style::Default);
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Event ev;
