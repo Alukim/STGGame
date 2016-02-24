@@ -46,9 +46,17 @@ GameObj::GameObj(RenderWindow *win, Texture *text, int x, int y, bool adjust, in
 {
 	if ((window = win) == NULL)
 	{
-		std::cerr << ("Could not find refered window. Exiting... ");
+		std::cerr << ("Could not find refered window. Exiting... ") << std::endl;
 		throw NULL;
 	}
+	if (!text)
+	{
+		std::cerr << "Texture passed is NULL!" << std::endl;
+		throw NULL;
+	}
+	else
+		shape.setTexture(text);
+	
 	if (adjust)
 	{
 		rect.left = x;

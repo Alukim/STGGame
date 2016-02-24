@@ -1,12 +1,11 @@
 #include <SFML/Graphics.hpp>
-#include <cmath>
 
 
-int main()
+int main(int argc, char **argv)
 {
 	const float fps = 1000 / 60;
 	const float ups = 1000 / 100;
-	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator");
+	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator", sf::Style::Fullscreen);
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Event ev;
@@ -45,5 +44,5 @@ int main()
 		}
 
 	} 
-	return 0;
+	return EXIT_SUCCESS;
 }

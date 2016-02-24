@@ -41,7 +41,7 @@ public:
 	//> returns current dimensions of an object
 	IntRect GetLayout() const;
 
-	void operator= (GameObj &ref);
+	void operator = (GameObj &ref);
 
 	//> draws the object into render context
 	virtual void Draw() const;
