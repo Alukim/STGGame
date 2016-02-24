@@ -5,7 +5,8 @@ class Node
 public:
 	T *Data;
 	Node<T> *Next;
-	Node();
+	Node(); //default construct
+	Node(T* temp);
 };
 template <class T>
 class List
@@ -43,7 +44,6 @@ inline void List<T>::AddNewElement(T *Data)
 		pTail = pTal->Next;
 	}
 	size++;
-
 }
 
 template<class T>
@@ -65,6 +65,8 @@ template<class T>
 inline T* List<T>::GetElement(unsigned int index)
 {
 }
+
+
 
 template<class T>
 inline List<T>::~List()
