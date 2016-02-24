@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML\Graphics.hpp"
+#include "Utilities.h"
 #include <list>
 
 using namespace sf;
