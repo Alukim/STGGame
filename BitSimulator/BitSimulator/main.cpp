@@ -1,28 +1,49 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
+
 int main()
 {
-	sf::RenderWindow okno(sf::VideoMode(320, 240), "Kurs SFML 2.0 - http://cpp0x.pl");
-	sf::Clock stoper;
-	while (okno.isOpen())
+	const float fps = 1000 / 60;
+	const float ups = 1000 / 100;
+	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator");
+	sf::Clock RenderClock;
+	sf::Clock UpdateClock;
+	sf::Event ev;
+	while (window.isOpen())
 	{
-		sf::Event event;
-		while (okno.pollEvent(event))
+		// Events handler section
+		while (window.pollEvent(ev))
 		{
-			if (event.type == sf::Event::Closed)
-				okno.close();
+			if (ev.type == sf::Event::Closed)
+				window.close();
 
-		} //while
-		okno.clear();
+			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Escape)
+			{
+				window.close();
+			}
+			
+		}
+		
 
-		sf::CircleShape ksztalt(std::sin(stoper.getElapsedTime().asSeconds()) * okno.getSize().y / 8 + okno.getSize().y / 4);
-		ksztalt.setOrigin(sf::Vector2f(ksztalt.getRadius(), ksztalt.getRadius()));
-		ksztalt.setPosition(okno.getSize().x / 2.0f, okno.getSize().y / 2.0f);
-		ksztalt.setFillColor(sf::Color::Yellow);
-		okno.draw(ksztalt);
+		// Update section
+		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
+		{
+			//
+			// updating object here
+			//
+		}
+		// Drawing section
+		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
+		{	
+			window.clear();
+			//
+			// Drawing objects here
+			//
+			window.display();
+			RenderClock.restart();
+		}
 
-		okno.display();
 	} 
 	return 0;
 }
