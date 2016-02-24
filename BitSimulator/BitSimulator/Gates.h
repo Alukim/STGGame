@@ -13,12 +13,19 @@ protected:
 	int inputs_count;
 public:
 	
-	
+	//> Default constructor
+	//> initializes inputs number
 	LogicElem() : inputs_count(inputs)
 	{
 	}
 
+	//> Pure virtual function used to simulate gate work
 	virtual bool Propagate() = 0;
+
+
+	//> Changes input digit on given track
+	//> /a index_in	- index of track
+	//> /a digit - digit value to be replaced
 	void SetCustomInput(int index_in, bool digit);
 	void Burn();
 	void Update();
@@ -38,7 +45,6 @@ public:
 template<int inputs>
 inline bool NORGate<inputs>::Propagate()
 {
-	std::cout << "Hello, this code better should work" << std::endl;
 	for (int i = 0; i < inputs_count; i++)
 	{
 		if (_input[i]) { std::cout << "Propagation on gate: FALSE"; return false; }
@@ -119,6 +125,60 @@ typedef XORGate<8> XOR8;
 
 
 
+
+// ===================================================== OR GATE CLASS =============================================================
+template <int inputs>
+class ORGate : public LogicElem<inputs>
+{
+public:
+	bool Propagate() override;
+};
+
+typedef ORGate<2> OR2;
+typedef ORGate<3> OR3;
+typedef ORGate<4> OR4;
+typedef ORGate<8> OR8;
+
+
+template<int inputs>
+inline bool ORGate<inputs>::Propagate()
+{
+	for (int i = 0; i < inputs_count; i++)
+	{
+		if (_input[i]) return true;
+	}
+
+	return false;
+}
+
+
+// ================================================== AND GATE CLASS ============================================================
+template <int inputs>
+class ANDGate : public LogicElem<inputs>
+{
+public:
+	bool Propagate() override;
+
+};
+
+typedef ANDGate<2> AND2;
+typedef ANDGate<3> AND3;
+typedef ANDGate<4> AND4;
+typedef ANDGate<8> AND8;
+
+
+
+template<int inputs>
+inline bool ANDGate<inputs>::Propagate()
+{
+	for (int i = 0; i < inputs_count; i++)
+	{
+		if (!_input[i]) return false;
+	}
+	return true;
+}
+
+
 // ===================================================== LOGIC ELEM CLASS ===========================================================
 template<int inputs>
 inline void LogicElem<inputs>::SetCustomInput(int index_in, bool digit)
@@ -141,6 +201,3 @@ inline void LogicElem<inputs>::Update()
 {
 	// updates logic
 }
-
-
-

@@ -5,7 +5,7 @@ int main(int argc, char **argv)
 {
 	XOR2 hehe;
 	hehe.SetCustomInput(0, 1);
-	hehe.SetCustomInput(1, 0);
+	hehe.SetCustomInput(1, 1);
 	hehe.Propagate();
 	const float fps = 1000 / 60;
 	const float ups = 1000 / 100;
