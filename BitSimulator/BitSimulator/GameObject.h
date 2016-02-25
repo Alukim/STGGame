@@ -20,7 +20,7 @@ public:
 
 	//> constructor
 	//> /a path - string containing path to the texture
-	GameObject(RenderWindow *win, std::string path, unsigned int x = 0, unsigned int y = 0);
+	GameObject(RenderWindow *win, std::string path,sf::Color transmask = sf::Color(0,0,0), unsigned int x = 0, unsigned int y = 0 );
 
 	//> sets position and modifies intmask of object
 	void SetPosition(int x, int y);

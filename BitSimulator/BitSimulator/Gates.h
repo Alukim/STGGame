@@ -6,16 +6,16 @@
 
 // ====================================================== LOGIC ELEM BASE CLASS =====================================================
 template <int inputs>
-class LogicElem: public GameObject
+class LogicElem : public GameObject
 {
 protected:
 	bool _input[inputs] = { 0 };
 	int inputs_count;
 public:
-	
+
 	//> Default constructor
 	//> initializes inputs number
-	LogicElem() : inputs_count(inputs)
+	LogicElem(sf::RenderWindow *winref, std::string path) : GameObject(winref, path, sf::Color(200, 200, 200)), inputs_count(inputs)
 	{
 	}
 
@@ -105,7 +105,7 @@ template<int inputs>
 inline bool XORGate<inputs>::Propagate()
 {
 	std::cout << "Hello, this code better should work" << std::endl;
-	bool result = true;
+	bool result = false;
 	for (int i = 0; i < inputs_count; i++)
 	{
 		if (_input[i]) result = !result;
@@ -157,6 +157,10 @@ template <int inputs>
 class ANDGate : public LogicElem<inputs>
 {
 public:
+	ANDGate<inputs>(sf::RenderWindow *win, std::string path) : LogicElem(win, path)
+	{
+	}
+
 	bool Propagate() override;
 
 };

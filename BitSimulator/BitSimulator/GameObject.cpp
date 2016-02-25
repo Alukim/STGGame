@@ -75,21 +75,25 @@ GameObject::GameObject(RenderWindow *win, Texture *text, int x, int y, bool adju
 	shape.setPosition(Vector2f(rect.left, rect.top));
 }
 
-GameObject::GameObject(RenderWindow *win, std::string path, unsigned int x, unsigned int y)
+GameObject::GameObject(RenderWindow *win, std::string path,  sf::Color transmask, unsigned int x, unsigned int y)
 {
-	sf::Texture temp;
+	sf::Image img;
+	sf::Texture *temp = new sf::Texture;
 	if (!(window = win))
 	{
 		std::cerr << ("Could not create a window reference. Exiting...");
 		throw NULL;
 	}
-	if (!temp.loadFromFile(path))
+	if (!(img.loadFromFile(path)))
 	{
 		std::cerr << ("Game files seem to be missing. Try reinstalling your game.");
 		throw NULL;
 	}
-
-	shape.setTexture(&temp, true);
+	if (transmask != sf::Color(0, 0, 0))
+		img.createMaskFromColor(transmask);
+	
+	temp->loadFromImage(img);
+	shape.setTexture(temp, true);
 	rect.left = x;
 	rect.top = y;
 	rect.width = shape.getTexture()->getSize().x;
