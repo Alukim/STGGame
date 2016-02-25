@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-
+#include "Gates.h"
 
 int main(int argc, char **argv)
 {
@@ -9,6 +9,7 @@ int main(int argc, char **argv)
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Event ev;
+	AND2 a(&window, "And.png");
 	while (window.isOpen())
 	{
 		// Events handler section
@@ -36,6 +37,7 @@ int main(int argc, char **argv)
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{	
 			window.clear();
+			a.Draw();
 			//
 			// Drawing objects here
 			//
