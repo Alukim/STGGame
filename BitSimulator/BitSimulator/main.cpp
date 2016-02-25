@@ -3,16 +3,13 @@
 
 int main(int argc, char **argv)
 {
-	XOR2 hehe;
-	hehe.SetCustomInput(0, 1);
-	hehe.SetCustomInput(1, 1);
-	hehe.Propagate();
 	const float fps = 1000 / 60;
 	const float ups = 1000 / 100;
-	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator", sf::Style::Default);
+	sf::RenderWindow window(sf::VideoMode(1920,1080, 32), "BitSimulator", sf::Style::Fullscreen);
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Event ev;
+	AND2 a(&window, "And.png");
 	while (window.isOpen())
 	{
 		// Events handler section
@@ -40,6 +37,7 @@ int main(int argc, char **argv)
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{	
 			window.clear();
+			a.Draw();
 			//
 			// Drawing objects here
 			//
