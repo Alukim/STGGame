@@ -6,7 +6,7 @@ public:
 	T *Data;
 	Node<T> *Next;
 	Node(); //default construct
-	Node(T* temp = NULL);
+	Node(T* temp);
 };
 template <class T>
 class List
@@ -23,22 +23,9 @@ public:
 };
 
 template<class T>
-inline Node<T>::Node()
-{
-}
-
-template<class T>
-inline Node<T>::Node(T* temp)
-{
-	Data = temp;
-	NExt = NULL;
-}
-
-template<class T>
 inline List<T>::List()
 {
-	pHead = NULL;
-	pTail = NULL;
+	Head = NULL;
 	size = 0;
 }
 
@@ -54,7 +41,7 @@ inline void List<T>::AddNewElement(T *Data)
 	else
 	{
 		pTail->Next = new Node<T>(Data);
-		pTail = pTail->Next;
+		pTail = pTal->Next;
 	}
 	size++;
 }
@@ -63,25 +50,13 @@ template<class T>
 inline void List<T>::DeleteElement(unsigned int index)
 {
 	Node<T>* temp = pHead;
-	if (index < size)
+	if (temp != NULL)
 	{
-		if (index != 0)
-		{
-			for (int i = 0; i < index; i++)
-			{
-				temp = temp->Next;
-			}
-			Node<T>* temp2 = temp->Next;
-			temp->Next = temp2->Next;
-			delete(temp2->Data);
-			delete(temp2);
-		}
-		else
-		{
-			pHead = pHead->Next;
-			delete(temp->Data);
-			delete(temp);
-		}
+		throw 0;
+	}
+	else
+	{
+		while()
 	}
 	size--;
 }
@@ -89,16 +64,6 @@ inline void List<T>::DeleteElement(unsigned int index)
 template<class T>
 inline T* List<T>::GetElement(unsigned int index)
 {
-	Node<T> *temp = pHead;
-	if (index < size)
-	{
-		for (int i = 0; i < index; i++)
-		{
-			temp = temp->Next;
-		}
-		return temp->Data;
-	}
-	else return NULL;
 }
 
 
@@ -108,3 +73,8 @@ inline List<T>::~List()
 {
 }
 
+template<class T>
+inline Node<T>::Node(T* temp)
+{
+	Data = temp;
+}
