@@ -3,7 +3,7 @@
 #include <string>
 using namespace sf;
 
-class GameObj
+class GameObject
 {
 protected:
 	sf::RenderWindow *window; //> pointer to a window object is asigned
@@ -11,16 +11,16 @@ protected:
 	sf::RectangleShape shape; //> representation of the object
 public:
 	//> default constructor
-	GameObj() {}
+	GameObject() {}
 
 	//> constructor
 	//> /a text is a pointer to created texture in file
 	//> /a adjust - flag informs about resizing the picture to texture size
-	GameObj(RenderWindow *win, Texture *text, int x = 0, int y = 0, bool adjust = true, int width = 0, int height = 0);
+	GameObject(RenderWindow *win, Texture *text, int x = 0, int y = 0, bool adjust = true, int width = 0, int height = 0);
 
 	//> constructor
 	//> /a path - string containing path to the texture
-	GameObj(RenderWindow *win, std::string path, unsigned int x = 0, unsigned int y = 0);
+	GameObject(RenderWindow *win, std::string path,sf::Color transmask = sf::Color(0,0,0), unsigned int x = 0, unsigned int y = 0 );
 
 	//> sets position and modifies intmask of object
 	void SetPosition(int x, int y);
@@ -41,12 +41,12 @@ public:
 	//> returns current dimensions of an object
 	IntRect GetLayout() const;
 
-	void operator = (GameObj &ref);
+	void operator = (GameObject &ref);
 
 	//> draws the object into render context
 	virtual void Draw() const;
 
-	virtual ~GameObj();
+	virtual ~GameObject();
 };
 
 

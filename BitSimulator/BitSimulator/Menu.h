@@ -23,9 +23,9 @@ class Menu
 	int current;
 
 	//> total options number
-	int _opts; // ilosc wszystkich opcji
+	int _opts;
 
-			   //> options list
+	//> options list
 	std::list<Text> opts;
 
 	//> pointer to font
@@ -55,7 +55,7 @@ public:
 	//> Sets background of the menu
 	void SetBackground(std::string path);
 	void SetBackground(sf::Texture *t);
-	//> Updates the menu every frame
+	//> Updates the menu on every frame
 	//> Switches between options, changes colors and control menu events
 	//> Returns number of option choosen by clicking LMB or pressing Enter
 	int Update(sf::Event &ev);
