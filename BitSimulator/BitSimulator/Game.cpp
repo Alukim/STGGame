@@ -11,7 +11,7 @@ Game::Game()
 		MessageBox(NULL, "Font not found!", "ERROR", NULL);
 		return;
 	}
-
+	Window = new sf::RenderWindow(sf::VideoMode(1920, 1080, 32), "BitSimulator", sf::Style::Fullscreen);
 	status = MENU;
 }
 
@@ -33,10 +33,10 @@ void Game::runGame()
 
 void Game::menu()
 {
-	sf::Text title("BitSimulator", Font, 80);
+	sf::Text title("BitSimulator", Font, 100);
 	title.setStyle(sf::Text::Bold);
 
-	title.setPosition(1280 / 2 - title.getGlobalBounds().width / 2, 20);
+	title.setPosition(1920 / 2 - title.getGlobalBounds().width / 2, 40);
 
 	const int ile = 2; //ile elementów masz w MENU
 
@@ -49,7 +49,7 @@ void Game::menu()
 		tekst[i].setCharacterSize(65);
 
 		tekst[i].setString(str[i]);
-		tekst[i].setPosition(1280 / 2 - tekst[i].getGlobalBounds().width / 2, 250 + i * 120);
+		tekst[i].setPosition(1920 / 2 - tekst[i].getGlobalBounds().width / 2, 500 + i * 120);
 	}
 
 	while (status == MENU)

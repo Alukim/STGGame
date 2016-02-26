@@ -1,8 +1,13 @@
 #include <SFML/Graphics.hpp>
+#include <stdio.h>
 #include "Gates.h"
+#include "Game.h"
 
 int main(int argc, char **argv)
 {
+	Game *object = new Game();
+	object->runGame();
+	/*
 	const float fps = 1000 / 60;
 	const float ups = 1000 / 100;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080, 32), "BitSimulator", sf::Style::Fullscreen);
@@ -47,6 +52,7 @@ int main(int argc, char **argv)
 			RenderClock.restart();
 		}
 
-	} 
+	}
+	*/
 	return EXIT_SUCCESS;
 }
