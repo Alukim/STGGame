@@ -7,9 +7,8 @@ public:
 	~Game();
 	void runGame();
 protected:
-	enum GameState {MENU,GAME_OVER,GAME,END}; //Lista wyliczeniowa statusu gry
-	GameState status;
-	sf::RenderWindow Window(sf::VideoMode(1920, 1080, 32), sf::Style::Fullscreen);
+	enum GameState {MENU,GAME_OVER,GAME,END} status; //Lista wyliczeniowa statusu gry
+	sf::RenderWindow *window;
 private:
 	sf::Font Font;
 
