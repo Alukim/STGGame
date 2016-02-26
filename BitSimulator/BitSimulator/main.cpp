@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{	
 			window.clear();
+
 			a.Draw();
 			//
 			// Drawing objects here
@@ -46,7 +47,7 @@ int main(int argc, char **argv)
 			window.display();
 			RenderClock.restart();
 		}
-
+		sf::sleep(sf::milliseconds(5));
 	} 
 	return EXIT_SUCCESS;
 }
