@@ -9,6 +9,8 @@ int main(int argc, char **argv)
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Event ev;
+	sf::Font Font;
+	Font.loadFromFile("comic.ttf");
 	AND2 a(&window, "And.png");
 	while (window.isOpen())
 	{
