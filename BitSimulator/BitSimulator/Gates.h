@@ -40,7 +40,6 @@ class NORGate : public LogicElem<inputs>
 {
 public:
 	bool Propagate() override;
-
 };
 template<int inputs>
 inline bool NORGate<inputs>::Propagate()
