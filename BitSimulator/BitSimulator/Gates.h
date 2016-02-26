@@ -222,8 +222,13 @@ public :
 	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path)
 	{
 		inputs_count = (int)pow(2, address_inputs);
-		_input = new bool[(int)pow(2, address_inputs)];
+		_input = new bool[inputs_count];
+		for (int i = 0; i < inputs_count; i++)
+			_input[i] = false;
+		
 		add_input = new bool[address_inputs];
+		for (int i = 0; i < address_inputs; i++)
+			add_input[i] = false;
 	}
 	bool Propagate();
 };
