@@ -4,6 +4,8 @@
 
 Game::Game()
 {
+	FPS = 1000/60;
+	UPS = 1000/100;
 	status = END;
 
 	if (!Font.loadFromFile("comic.ttf"))
@@ -27,7 +29,70 @@ void Game::runGame()
 		case GameState::GAME:
 			//
 			break;
+		case GameState::GAME_OVER:
+			GameOver();
+			break;
 		}
+	}
+}
+void Game::GameOver()
+{
+	sf::Text title("GAME OVER", Font, 100);
+	title.setStyle(sf::Text::Bold);
+
+	title.setPosition((Window->getSize().x / 2) - (title.getGlobalBounds().width / 2), Window->getSize().y / 7);
+
+	const int ile = 2; //ile elementów masz w GAME_OVER
+
+	sf::Text tekst[ile];
+
+	std::string str[] = { "Retry","Menu" };
+	for (int i = 0;i < ile;i++)
+	{
+		tekst[i].setFont(Font);
+		tekst[i].setCharacterSize(65);
+
+		tekst[i].setString(str[i]);
+		tekst[i].setPosition((Window->getSize().x / 2) - (tekst[i].getGlobalBounds().width / 2), (Window->getSize().y / 2) - (tekst[i].getGlobalBounds().height / 2 * -4 * i));
+	}
+
+	while (status == MENU)
+	{
+		sf::Vector2f mouse(sf::Mouse::getPosition(*Window));
+		sf::Event event;
+
+		while (Window->pollEvent(event))
+		{
+			//Wciœniêcie X
+			if (event.type == sf::Event::Closed)
+			{
+				status = END;
+			}
+
+			//klikniêcie Retry
+			else if (tekst[1].getGlobalBounds().contains(mouse) && event.type == sf::Event::MouseButtonReleased && event.key.code == sf::Mouse::Left)
+			{
+				status = GAME;
+			}
+
+			//klikniêcie Menu
+			else if (tekst[2].getGlobalBounds().contains(mouse) && event.type == sf::Event::MouseButtonReleased && event.key.code == sf::Mouse::Left)
+			{
+				status == MENU;
+			}
+		}
+		for (int i = 0;i < ile;i++)
+			if (tekst[i].getGlobalBounds().contains(mouse))
+				tekst[i].setColor(sf::Color::Cyan);
+			else tekst[i].setColor(sf::Color::White);
+
+			Window->clear();
+
+			Window->draw(title);
+			for (int i = 0;i < ile;i++)
+				Window->draw(tekst[i]);
+
+			Window->display();
 	}
 }
 
@@ -36,7 +101,7 @@ void Game::menu()
 	sf::Text title("BitSimulator", Font, 100);
 	title.setStyle(sf::Text::Bold);
 
-	title.setPosition(1920 / 2 - title.getGlobalBounds().width / 2, 40);
+	title.setPosition((Window->getSize().x / 2) - (title.getGlobalBounds().width / 2), Window->getSize().y / 9);
 
 	const int ile = 2; //ile elementów masz w MENU
 
@@ -49,12 +114,12 @@ void Game::menu()
 		tekst[i].setCharacterSize(65);
 
 		tekst[i].setString(str[i]);
-		tekst[i].setPosition(1920 / 2 - tekst[i].getGlobalBounds().width / 2, 500 + i * 120);
+		tekst[i].setPosition((Window->getSize().x / 2) - (tekst[i].getGlobalBounds().width / 2), (Window->getSize().y / 2) - (tekst[i].getGlobalBounds().height / 2 * -4 * i));
 	}
 
 	while (status == MENU)
 	{
-		sf::Vector2f mouse(sf::Mouse::getPosition(/*mo¿emy tutaj podaæ okno*/));
+		sf::Vector2f mouse(sf::Mouse::getPosition(*Window));
 		sf::Event event;
 
 		while (Window->pollEvent(event))
@@ -62,7 +127,9 @@ void Game::menu()
 			//Wciœniêcie ESC lub przycisk X
 			if (event.type == sf::Event::Closed || event.type == sf::Event::KeyPressed &&
 				event.key.code == sf::Keyboard::Escape)
+			{
 				status = END;
+			}
 
 			//klikniêcie EXIT
 			else if (tekst[1].getGlobalBounds().contains(mouse) &&
@@ -70,8 +137,14 @@ void Game::menu()
 			{
 				status = END;
 			}
+
+			//Wciœniecie G
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::G)
+			{
+				status = GAME_OVER;
+			}
 		}
-		for (int i = 0;i<ile;i++)
+		for (int i = 0;i < ile;i++)
 			if (tekst[i].getGlobalBounds().contains(mouse))
 				tekst[i].setColor(sf::Color::Cyan);
 			else tekst[i].setColor(sf::Color::White);
@@ -79,12 +152,14 @@ void Game::menu()
 			Window->clear();
 
 			Window->draw(title);
-			for (int i = 0;i<ile;i++)
+			for (int i = 0;i < ile;i++)
 				Window->draw(tekst[i]);
 
 			Window->display();
 	}
 }
+
+
 
 Game::~Game()
 {

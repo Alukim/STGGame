@@ -5,13 +5,17 @@ class Game
 public:
 	Game();
 	~Game();
-	sf::RenderWindow *Window;
 	void runGame();
 protected:
 	enum GameState {MENU,GAME_OVER,GAME,END} status; //Lista wyliczeniowa statusu gry
+	void menu();
+	void GameOver();
 private:
 	sf::Font Font;
-
-	void menu();
+	float FPS;
+	float UPS;
+	sf::Clock *RenderClock;
+	sf::Clock *UpdateClock;
+	sf::RenderWindow *Window;
 };
 
