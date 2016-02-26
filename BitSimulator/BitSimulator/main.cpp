@@ -47,5 +47,7 @@ int main(int argc, char **argv)
 			window.display();
 			RenderClock.restart();
 		}
+
+		sf::sleep(sf::milliseconds(8));
 	}
 }
