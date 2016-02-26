@@ -14,13 +14,18 @@ int main(int argc, char **argv)
 	sf::Clock UpdateClock;
 	sf::Event ev;
 	sf::Font Font;
-	sf::Texture texture;
-	if (!texture.loadFromFile("Resource\Texture\Menu.jpg"))
+	sf::Texture *texture = new sf::Texture;
+	if ((texture->loadFromFile("Resource\Texture\Menu.jpg")))
 	{
 		MessageBox(NULL, "Texture not found", "Error", NULL);
 		return 0;
 	}
-	Font.loadFromFile("Resource\Fonts\Comic\comic.ttf");
+	if (!Font.loadFromFile("Resource\Fonts\Comic\comic.ttf"))
+	{
+		MessageBox(NULL, "Font not found", "Error", NULL);
+		return 0;
+	}
+	sf::Sprite Background_menu(*texture);
 	AND2 a(&window, "Resource\Gates\And.png");
 	while (window.isOpen())
 	{
@@ -47,7 +52,7 @@ int main(int argc, char **argv)
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{
 			window.clear();
-			a.Draw();
+			window.draw(Background_menu);
 			//
 			// Drawing objects here
 			//
