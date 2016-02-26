@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include <string>
 #include <iostream>
+#include <math.h>
 
 
 // ====================================================== LOGIC ELEM BASE CLASS =====================================================
@@ -9,7 +10,7 @@ template <int inputs>
 class LogicElem : public GameObject
 {
 protected:
-	bool _input[inputs] = { 0 };
+	bool * _input;
 	int inputs_count;
 public:
 
@@ -38,7 +39,13 @@ public:
 template <int inputs>
 class NORGate : public LogicElem<inputs>
 {
+	
 public:
+	NORGate<inputs>(sf::RenderWindow * window, std::string path) : GameObject(window, path)
+	{
+		inputs_count = inputs;
+		_input = new bool[inputs_count];
+	}
 	bool Propagate() override;
 };
 template<int inputs>
@@ -203,4 +210,45 @@ template<int inputs>
 inline void LogicElem<inputs>::Update()
 {
 	// updates logic
+}
+
+template <int address_inputs>
+class Multiplexer : public LogicElem<address_inputs>
+{
+	bool strob;
+	bool *add_input;
+
+public : 
+	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path)
+	{
+		inputs_count = (int)pow(2, address_inputs);
+		_input = new bool[(int)pow(2, address_inputs)];
+		add_input = new bool[address_inputs];
+	}
+	bool Propagate();
+};
+
+typedef Multiplexer<4> Multiplexer16;
+typedef Multiplexer<3> Multiplexer8;
+typedef Multiplexer<2> Multiplexer4;
+typedef Multiplexer<1> Multiplexer2;
+
+template<int address_inputs>
+inline bool Multiplexer<address_inputs>::Propagate()
+{
+	int address = 0;
+
+	// getting number of input
+	for (int i = 0; i < address_inputs; i++)
+	{
+		if (add_input[i])
+		{
+			address += (int)pow(2, i);
+		}
+	}
+
+	if (_input[i])
+		return true;
+	
+	else return false;
 }
