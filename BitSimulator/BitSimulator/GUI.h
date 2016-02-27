@@ -60,5 +60,4 @@ class InfoGiver
 	sf::Sprite * text_tab;
 public:
 	InfoGiver(int x, int y, int w, int h);
-	void AddElem(
 };
