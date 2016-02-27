@@ -78,7 +78,6 @@ void VerticalBuffer::Refactor()
 
 InfoGiver::InfoGiver(int x, int y, int w, int h) :text_tab(NULL)
 {
-	
 	black_back.setPosition(x, y);
 	black_back.setSize(sf::Vector2f(w, h));
 	black_back.setFillColor(sf::Color::Black);
