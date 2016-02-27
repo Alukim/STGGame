@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\Graphics.hpp>
 
+
 // class used for drawing meters filled with spectrum's colors
 class Buffer
 {
@@ -9,6 +10,8 @@ protected:
 	sf::RenderWindow * window;
 	int load;
 	int capacity;
+
+	short int flashcounter;
 	// entire buffer 
 	sf::IntRect dim;
 	sf::RectangleShape layout;
@@ -43,4 +46,19 @@ class VerticalBuffer : public Buffer
 {
 public:
 	void Refactor() override;
+};
+
+
+//class HorizontalBuffer : public Buffer
+//{
+//};
+
+
+class InfoGiver
+{
+	sf::RectangleShape black_back;
+	sf::Sprite * text_tab;
+public:
+	InfoGiver(int x, int y, int w, int h);
+	void AddElem(
 };

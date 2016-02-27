@@ -9,6 +9,7 @@ Buffer::Buffer(int cap, int x, int y, int w, int h)
 	dim.width = w;
 	dim.height = h;
 
+	flashcounter = 0;
 	flowdim.left = dim.left + 5;
 	flowdim.width = dim.width - 10;
 
@@ -33,6 +34,17 @@ bool Buffer::Load(int value)
 
 void Buffer::Draw()
 {
+
+	if (alerted)
+	{
+		if (flashcounter < 30)
+			layout.setFillColor(sf::Color::Red);
+		else if (flashcounter < 60)
+			layout.setFillColor(sf::Color::Black);
+		else
+			flashcounter = 0;
+	}
+
 	window->draw(layout);
 	window->draw(fill);
 }
@@ -60,5 +72,14 @@ void VerticalBuffer::Refactor()
 
 
 	flowdim.height = res * dim.height;
-	flowdim.top = dim.top + dim.height - flowdim.height + 5;
+	flowdim.top = dim.top + dim.height - flowdim.height -5;
+}
+
+
+InfoGiver::InfoGiver(int x, int y, int w, int h) :text_tab(NULL)
+{
+	
+	black_back.setPosition(x, y);
+	black_back.setSize(sf::Vector2f(w, h));
+	black_back.setFillColor(sf::Color::Black);
 }
