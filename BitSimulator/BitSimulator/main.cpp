@@ -1,11 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
+#include <Windows.h>
 #include "Gates.h"
 #include "Game.h"
 
+
 int main(int argc, char **argv)
 {
-
 	const float fps = 1000 / 60;
 	const float ups = 1000 / 100;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080, 32), "BitSimulator", sf::Style::Fullscreen);
@@ -13,8 +14,19 @@ int main(int argc, char **argv)
 	sf::Clock UpdateClock;
 	sf::Event ev;
 	sf::Font Font;
-	Font.loadFromFile("comic.ttf");
-	AND2 a(&window, "And.png");
+	sf::Texture *texture = new sf::Texture;
+	if ((texture->loadFromFile("Resource\Texture\Menu.jpg")))
+	{
+		MessageBox(NULL, "Texture not found", "Error", NULL);
+		return 0;
+	}
+	if (!Font.loadFromFile("Resource\Fonts\Comic\comic.ttf"))
+	{
+		MessageBox(NULL, "Font not found", "Error", NULL);
+		return 0;
+	}
+	sf::Sprite Background_menu(*texture);
+	AND2 a(&window, "Resource\Gates\And.png");
 	while (window.isOpen())
 	{
 		// Events handler section
@@ -40,7 +52,7 @@ int main(int argc, char **argv)
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{
 			window.clear();
-			a.Draw();
+			window.draw(Background_menu);
 			//
 			// Drawing objects here
 			//
@@ -50,4 +62,5 @@ int main(int argc, char **argv)
 
 		sf::sleep(sf::milliseconds(8));
 	}
+	return EXIT_SUCCESS;
 }
