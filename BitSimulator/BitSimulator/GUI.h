@@ -9,13 +9,14 @@ class Battery
 	int load;				//> battery's load
 	int cap;				//> battery's capacity
 	sf::Sprite batsprite;	//>	battery's sprite
-	sf::Sprite lightsprite;
+	sf::Sprite lightsprite; //> lightning's sprite
 
 	sf::RenderWindow *ref;	//> pointer to window battery will be drawn in
 
 	bool change;			//> defines if sprite needs to be updated before drawing
 
-	sf::Image img;			//> variable where updates take place
+	sf::Image batimg;		//> variable where batimg updates take place
+	sf::Image lightimg;		//> variable where lightning updates take place
 	int waver;				//> special counter to provide flashing when battery is full
 	void Refactor();		//> update method
 

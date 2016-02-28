@@ -11,19 +11,17 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 	load = l;
 	cap = c;
 
-	img.loadFromFile(path);
-	img.createMaskFromColor(sf::Color(200, 200, 200));
-
+	batimg.loadFromFile(path);
+	batimg.createMaskFromColor(sf::Color(200, 200, 200));
 
 	sf::Texture * battxt = new sf::Texture;
-	battxt->loadFromImage(img);
+	battxt->loadFromImage(batimg);
 	batsprite.setTexture(*battxt);
 	batsprite.setPosition(sf::Vector2f(xpos, ypos));
-	sf::Image lightning;
-	lightning.loadFromFile("piorun2.png");
-	lightning.createMaskFromColor(sf::Color(255, 0, 255));
+	lightimg.loadFromFile("Resource/Textures/Baterry/piorun2.png");
+	lightimg.createMaskFromColor(sf::Color(255, 0, 255));
 	sf::Texture *lighttxt = new sf::Texture;
-	lighttxt->loadFromImage(lightning);
+	lighttxt->loadFromImage(lightimg);
 	lightsprite.setTexture(*lighttxt);
 
 	sf::FloatRect temp = batsprite.getGlobalBounds();
@@ -37,7 +35,7 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 
 void Battery::Refactor()
 {
-	sf::Vector2u dim = img.getSize(); // dimensions of image
+	sf::Vector2u dim = batimg.getSize(); // dimensions of image
 
 	sf::Color prob; // keeps tempoporary colour of pixel
 
@@ -62,24 +60,24 @@ void Battery::Refactor()
 	{
 		for (int posy = 0; posy < dim.y; posy++)
 		{
-			prob = img.getPixel(posx, posy);
+			prob = batimg.getPixel(posx, posy);
 
 			if (posy < href) // colours the transparent section of battery
 			{
 
 				if (prob != sf::Color(254, 0, 0) && prob != sf::Color::Black && prob != sf::Color(200, 200, 200, 0))
-					img.setPixel(posx, posy, sf::Color::Transparent);
+					batimg.setPixel(posx, posy, sf::Color::Transparent);
 			}
 			else // colours fill section of battery
 			{
 
 				if (prob != sf::Color(254, 0, 0) && prob != sf::Color::Black && prob != sf::Color(200, 200, 200, 0))
-					img.setPixel(posx, posy, fill);
+					batimg.setPixel(posx, posy, fill);
 			}
 		}
 	}
 	sf::Texture * _ptr = new sf::Texture;
-	_ptr->loadFromImage(img);
+	_ptr->loadFromImage(batimg);
 
 	batsprite.setTexture(*_ptr);
 }
@@ -111,38 +109,35 @@ void Battery::Draw()
 	{
 		Refactor();
 
-		sf::Vector2u dim = img.getSize();
+		sf::Vector2u dim = batimg.getSize();
 		if (load == cap)
 		{
 			if (waver < 15)
 			{
-				for (int posx = 0; posx < dim.x; posx++)
-				{
-					for (int posy = 0; posy < dim.y; posy++)
-					{
-						sf::Color temp = img.getPixel(posx, posy);
-						if (temp == sf::Color::Black)
-							img.setPixel(posx, posy, sf::Color(254, 0, 0));
-					}
-				}
+				ChangeColor(&batimg, sf::Color::Black, sf::Color(254, 0, 0));
+				ChangeColor(&lightimg, sf::Color::Black, sf::Color(254, 0, 0));
 			}
+
 			else if (waver < 30)
 			{
-				for (int posx = 0; posx < dim.x; posx++)
-				{
-					for (int posy = 0; posy < dim.y; posy++)
-					{
-						if (img.getPixel(posx, posy) == sf::Color(254, 0, 0))
-							img.setPixel(posx, posy, sf::Color::Black);
-					}
-				}
+				ChangeColor(&batimg, sf::Color(254, 0, 0), sf::Color::Black);
+				ChangeColor(&lightimg, sf::Color(254, 0, 0), sf::Color::Black);
 			}
-		}
-		else	ChangeColor(&img, sf::Color(254, 0, 0), sf::Color::Black);
 
-		sf::Texture *ptr = new sf::Texture;
-		ptr->loadFromImage(img);
-		batsprite.setTexture(*ptr);
+		}
+		else
+		{
+			ChangeColor(&batimg, sf::Color(254, 0, 0), sf::Color::Black);
+			ChangeColor(&lightimg, sf::Color(254, 0, 0), sf::Color::Black);
+		}
+
+		sf::Texture *batptr = new sf::Texture;
+		batptr->loadFromImage(batimg);
+		batsprite.setTexture(*batptr);
+
+		sf::Texture *lightptr = new sf::Texture;
+		lightptr->loadFromImage(lightimg);
+		lightsprite.setTexture(*lightptr);
 	}
 	waver++;
 	ref->draw(batsprite);
