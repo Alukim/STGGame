@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <stdio.h>
 #include <Windows.h>
 #include "Gates.h"
@@ -15,13 +16,23 @@ int main(int argc, char **argv)
 	sf::Clock UpdateClock;
 	sf::Event ev;
 	sf::Font Font;
+	sf::Music Music;
 	Battery bat(&window, 200, 5000, "Resource/Textures/Baterry/bat.png");
-	
+
+	if (!Music.openFromFile("Resource/Music/Menu.ogg"))
+	{
+		MessageBox(NULL, "Music not found", "Error", NULL);
+		return 0;
+	}
+
 	if (!Font.loadFromFile("Resource/Fonts/comic.ttf"))
 	{
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
 	}
+	Music.setVolume(50);
+	Music.setLoop(true);
+	Music.play();
 	
 	while (window.isOpen())
 	{

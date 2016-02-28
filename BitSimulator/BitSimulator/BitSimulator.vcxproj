@@ -149,6 +149,9 @@
     <Font Include="Resource\Fonts\comici.ttf" />
     <Font Include="Resource\Fonts\comicz.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Music\Menu.ogg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
