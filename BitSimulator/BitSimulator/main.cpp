@@ -17,22 +17,13 @@ int main(int argc, char **argv)
 	sf::Font Font;
 
 	Battery bat(&window, 200, 5000, "bat.png");
-	sf::Texture *texture = new sf::Texture;
-	if ((texture->loadFromFile("Menu.jpg")))
-	{
-		MessageBox(NULL, "Texture not found", "Error", NULL);
-		return 0;
-	}
+
 	if (!Font.loadFromFile("comic.ttf"))
 	{
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
 	}
-	sf::Sprite Background_menu(*texture);
 	
-
-
-
 	while (window.isOpen())
 	{
 		// Events handler section
@@ -50,6 +41,7 @@ int main(int argc, char **argv)
 		// Update section
 		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
 		{
+
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				bat.Load(50);
@@ -70,7 +62,6 @@ int main(int argc, char **argv)
 		{
 			window.clear();
 			bat.Draw();
-			window.draw(Background_menu);
 			//
 			// Drawing objects here
 			//
