@@ -58,20 +58,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bat.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="lightning.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Debug\Resource\Gates\And.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Debug\Resource\Texture\Menu.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="..\Debug\Resource\Fonts\Comic\comic.ttf">
       <Filter>Resource Files</Filter>
     </Font>
@@ -84,5 +70,19 @@
     <Font Include="..\Debug\Resource\Fonts\Comic\comicz.ttf">
       <Filter>Resource Files</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Debug\And.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Debug\bat.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Debug\Menu.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Debug\piorun.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

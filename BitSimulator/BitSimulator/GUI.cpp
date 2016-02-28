@@ -74,7 +74,7 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path)
 	battxt->loadFromImage(img);
 	batsprite.setTexture(*battxt);
 	batsprite.setPosition(sf::Vector2f(100, 100));
-
+	batsprite.setScale(sf::Vector2f(0.5f, 0.5f));
 	sf::Image lightning;
 	lightning.loadFromFile("lightning.png");
 	lightning.createMaskFromColor(sf::Color(255, 0, 255));

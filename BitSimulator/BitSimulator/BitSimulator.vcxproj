@@ -137,16 +137,16 @@
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Debug\Resource\Gates\And.png" />
-    <Image Include="..\Debug\Resource\Texture\Menu.jpg" />
-    <Image Include="bat.png" />
-    <Image Include="lightning.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="..\Debug\Resource\Fonts\Comic\comic.ttf" />
     <Font Include="..\Debug\Resource\Fonts\Comic\comicbd.ttf" />
     <Font Include="..\Debug\Resource\Fonts\Comic\comici.ttf" />
     <Font Include="..\Debug\Resource\Fonts\Comic\comicz.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Debug\And.png" />
+    <Image Include="..\Debug\bat.png" />
+    <Image Include="..\Debug\Menu.jpg" />
+    <Image Include="..\Debug\piorun.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
