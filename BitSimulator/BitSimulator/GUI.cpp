@@ -16,10 +16,13 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 
 	sf::Texture * battxt = new sf::Texture;
 	battxt->loadFromImage(batimg);
+	
 	batsprite.setTexture(*battxt);
 	batsprite.setPosition(sf::Vector2f(xpos, ypos));
+	
 	lightimg.loadFromFile("Resource/Textures/Baterry/piorun2.png");
 	lightimg.createMaskFromColor(sf::Color(255, 0, 255));
+	
 	sf::Texture *lighttxt = new sf::Texture;
 	lighttxt->loadFromImage(lightimg);
 	lightsprite.setTexture(*lighttxt);
