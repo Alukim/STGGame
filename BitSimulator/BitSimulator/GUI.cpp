@@ -45,7 +45,7 @@ void Battery::Refactor()
 	sf::Color fill;	// colour battery will be filled with
 
 
-	// estimating fill colour
+					// estimating fill colour
 	if (res < 0.15f)		fill = sf::Color::Red;
 	else if (res < 0.4f)	fill = sf::Color(255, 165, 0);
 	else if (res < 0.7f)	fill = sf::Color::Yellow;
@@ -102,7 +102,7 @@ void Battery::Dissipate(int load_dnc)
 
 void Battery::Draw()
 {
-	
+
 	if (waver == 31) waver = 0;
 	if (waver == 0 || waver == 16)	change = true;
 	if (change)
