@@ -9,3 +9,17 @@ bool Intersect(FloatRect &elem1, Vector2i &elem2)
 	else
 		return false;
 }
+
+void ChangeColor(sf::Image * ptr, sf::Color col1, sf::Color col2)
+{
+	Vector2u dim = ptr->getSize();
+
+	for (int posx = 0; posx < dim.x; posx++)
+	{
+		for (int posy = 0; posy < dim.y; posy++)
+		{
+			if (ptr->getPixel(posx, posy) == col1)
+				ptr->setPixel(posx, posy, col2);
+		}
+	}
+}

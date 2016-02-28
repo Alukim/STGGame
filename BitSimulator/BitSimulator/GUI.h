@@ -3,55 +3,42 @@
 
 
 // class used for drawing meters filled with spectrum's colors
-class Buffer
+class Battery
 {
-
-protected:
-	sf::RenderWindow * window;
-	int load;
-	int capacity;
-
-	short int flashcounter;
-	// entire buffer 
-	sf::IntRect dim;
-	sf::RectangleShape layout;
 	
-	// flow
-	sf::RectangleShape fill;
-	sf::IntRect flowdim;
-	
-	bool alerted;
-	virtual void Refactor() = 0;
+	int load;				//> battery's load
+	int cap;				//> battery's capacity
+	sf::Sprite sprite;		//>	battery's sprite
+	sf::RenderWindow *ref;	//> pointer to window battery will be drawn in
+
+	bool change;			//> defines if sprite needs to be updated before drawing
+
+	sf::Image img;			//> variable where updates take place
+	int waver;				//> special counter to provide flashing when battery is full
+	void Refactor();		//> update method
+
 public:
 
-	//> constructor
-	Buffer(int cap, int x, int y, int w, int h);
+	//> Constructor
+	//> Creates Battery image with loading utility
+	//> /a window - pointer to window battery will be drawn in
+	//> /a l - load the battery starts with
+	//> /a c - capacity of battery
+	//> /a path - path of the image
+	Battery(sf::RenderWindow *window, int l, int c, std::string path);
+
+
 	
-	//> sets if there is an alert when meter is full
-	void SetAlert(bool state);
-
-	//> returns current fullfilment
-	int GetFullfillment();
-
-	//> adds /a value to the load
-	//> returns true if buffer is overloaded
-	bool Load(int value);
-
-	//> draws buffer onto screen
-	virtual void Draw();
+	//> Adds the /a load_inc to load value
+	void Load(int load_inc);
+		
+	//> decrements load value by /a load_dnc
+	void Dissipate(int load_dnc);
+		
+	//> Draws the sprite onto screen
+	void Draw();
 };
 
-
-class VerticalBuffer : public Buffer
-{
-public:
-	void Refactor() override;
-};
-
-
-//class HorizontalBuffer : public Buffer
-//{
-//};
 
 
 class InfoGiver
