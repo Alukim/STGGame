@@ -58,6 +58,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <Image Include="bat.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="lightning.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
