@@ -15,7 +15,6 @@ int main(int argc, char **argv)
 	sf::Clock UpdateClock;
 	sf::Event ev;
 	sf::Font Font;
-
 	Battery bat(&window, 200, 5000, "bat.png");
 	
 	if (!Font.loadFromFile("comic.ttf"))
