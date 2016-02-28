@@ -3,7 +3,8 @@
 #include <Windows.h>
 #include "Gates.h"
 #include "Game.h"
-
+#include "Utilities.h"
+#include "GUI.h";
 
 int main(int argc, char **argv)
 {
@@ -14,7 +15,9 @@ int main(int argc, char **argv)
 	sf::Clock UpdateClock;
 	sf::Event ev;
 	sf::Font Font;
-	sf::Texture *texture = new sf::Texture;
+
+	Battery bat(&window, 200, 5000, "bat.png");
+	/*sf::Texture *texture = new sf::Texture;
 	if ((texture->loadFromFile("Resource\Texture\Menu.jpg")))
 	{
 		MessageBox(NULL, "Texture not found", "Error", NULL);
@@ -26,7 +29,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	sf::Sprite Background_menu(*texture);
-	AND2 a(&window, "Resource\Gates\And.png");
+	AND2 a(&window, "Resource\Gates\And.png");*/
+	
 	while (window.isOpen())
 	{
 		// Events handler section
@@ -44,6 +48,14 @@ int main(int argc, char **argv)
 		// Update section
 		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
 		{
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				bat.Load(20);
+			}
+			else if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
+			{
+				bat.Dissipate(30);
+			}
 			//
 			// updating object here
 			//
@@ -51,8 +63,9 @@ int main(int argc, char **argv)
 		// Drawing section
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{
-			window.clear();
-			window.draw(Background_menu);
+			window.clear(sf::Color::Blue);
+			bat.Draw();
+			//window.draw(Background_menu);
 			//
 			// Drawing objects here
 			//

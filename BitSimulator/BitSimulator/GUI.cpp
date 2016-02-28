@@ -55,7 +55,7 @@ void Battery::Refactor()
 	sf::Texture * _ptr = new sf::Texture;
 	_ptr->loadFromImage(img);
 
-	sprite.setTexture(*_ptr);
+	batsprite.setTexture(*_ptr);
 }
 
 Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path)
@@ -70,12 +70,21 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path)
 	img.createMaskFromColor(sf::Color(200, 200, 200));
 
 
-	sf::Texture * ptr = new sf::Texture;
-	ptr->loadFromImage(img);
+	sf::Texture * battxt = new sf::Texture;
+	battxt->loadFromImage(img);
+	batsprite.setTexture(*battxt);
+	batsprite.setPosition(sf::Vector2f(100, 100));
 
-	sprite.setTexture(*ptr);
-
-	sprite.setPosition(sf::Vector2f(100, 100));
+	sf::Image lightning;
+	lightning.loadFromFile("lightning.png");
+	lightning.createMaskFromColor(sf::Color(255, 0, 255));
+	sf::Texture *lighttxt = new sf::Texture;
+	lighttxt->loadFromImage(lightning);
+	lightsprite.setTexture(*lighttxt);
+	lightsprite.setScale(sf::Vector2f(0.1, 0.1));
+	
+	sf::FloatRect temp = batsprite.getGlobalBounds();
+	lightsprite.setPosition(sf::Vector2f((temp.left + temp.width) / 2, (temp.top + temp.height) / 2));
 }
 
 void Battery::Load(int load_inc)
@@ -136,9 +145,10 @@ void Battery::Draw()
 
 		sf::Texture *ptr = new sf::Texture;
 		ptr->loadFromImage(img);
-		sprite.setTexture(*ptr);
+		batsprite.setTexture(*ptr);
 	}
 	waver++;
-	ref->draw(sprite);
+	ref->draw(batsprite);
+	ref->draw(lightsprite);
 	change = false;
 }

@@ -8,7 +8,9 @@ class Battery
 	
 	int load;				//> battery's load
 	int cap;				//> battery's capacity
-	sf::Sprite sprite;		//>	battery's sprite
+	sf::Sprite batsprite;	//>	battery's sprite
+	sf::Sprite lightsprite;
+
 	sf::RenderWindow *ref;	//> pointer to window battery will be drawn in
 
 	bool change;			//> defines if sprite needs to be updated before drawing
