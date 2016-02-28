@@ -64,5 +64,25 @@
     <Image Include="lightning.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Debug\Resource\Gates\And.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\Debug\Resource\Texture\Menu.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\Debug\Resource\Fonts\Comic\comic.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="..\Debug\Resource\Fonts\Comic\comicbd.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="..\Debug\Resource\Fonts\Comic\comici.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="..\Debug\Resource\Fonts\Comic\comicz.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>
