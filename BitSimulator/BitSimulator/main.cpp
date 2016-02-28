@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	sf::Font Font;
 
 	Battery bat(&window, 200, 5000, "bat.png");
-
+	
 	if (!Font.loadFromFile("comic.ttf"))
 	{
 		MessageBox(NULL, "Font not found", "Error", NULL);
