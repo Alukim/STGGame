@@ -2,12 +2,38 @@
 #include "Utilities.h"
 
 
-InfoGiver::InfoGiver(int x, int y, int w, int h) :text_tab(NULL)
+
+Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int xpos, int ypos)
 {
-	black_back.setPosition(x, y);
-	black_back.setSize(sf::Vector2f(w, h));
-	black_back.setFillColor(sf::Color::Black);
+	change = true;
+	waver = 0;
+	ref = window;
+	load = l;
+	cap = c;
+
+	img.loadFromFile(path);
+	img.createMaskFromColor(sf::Color(200, 200, 200));
+
+
+	sf::Texture * battxt = new sf::Texture;
+	battxt->loadFromImage(img);
+	batsprite.setTexture(*battxt);
+	batsprite.setPosition(sf::Vector2f(xpos, ypos));
+	sf::Image lightning;
+	lightning.loadFromFile("piorun.png");
+	lightning.createMaskFromColor(sf::Color(255, 0, 255));
+	sf::Texture *lighttxt = new sf::Texture;
+	lighttxt->loadFromImage(lightning);
+	lightsprite.setTexture(*lighttxt);
+
+	sf::FloatRect temp = batsprite.getGlobalBounds();
+	lightsprite.setPosition(sf::Vector2f(xpos, ypos));
+
+	batsprite.setScale(sf::Vector2f(0.5f, 0.5f));
+	lightsprite.setScale(sf::Vector2f(0.5f, 0.5f));
 }
+
+
 
 void Battery::Refactor()
 {
@@ -56,35 +82,6 @@ void Battery::Refactor()
 	_ptr->loadFromImage(img);
 
 	batsprite.setTexture(*_ptr);
-}
-
-Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path)
-{
-	change = true;
-	waver = 0;
-	ref = window;
-	load = l;
-	cap = c;
-
-	img.loadFromFile(path);
-	img.createMaskFromColor(sf::Color(200, 200, 200));
-
-
-	sf::Texture * battxt = new sf::Texture;
-	battxt->loadFromImage(img);
-	batsprite.setTexture(*battxt);
-	batsprite.setPosition(sf::Vector2f(100, 100));
-	batsprite.setScale(sf::Vector2f(0.5f, 0.5f));
-	sf::Image lightning;
-	lightning.loadFromFile("lightning.png");
-	lightning.createMaskFromColor(sf::Color(255, 0, 255));
-	sf::Texture *lighttxt = new sf::Texture;
-	lighttxt->loadFromImage(lightning);
-	lightsprite.setTexture(*lighttxt);
-	lightsprite.setScale(sf::Vector2f(0.1, 0.1));
-	
-	sf::FloatRect temp = batsprite.getGlobalBounds();
-	lightsprite.setPosition(sf::Vector2f((temp.left + temp.width) / 2, (temp.top + temp.height) / 2));
 }
 
 void Battery::Load(int load_inc)

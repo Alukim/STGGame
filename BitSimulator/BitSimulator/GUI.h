@@ -27,7 +27,8 @@ public:
 	//> /a l - load the battery starts with
 	//> /a c - capacity of battery
 	//> /a path - path of the image
-	Battery(sf::RenderWindow *window, int l, int c, std::string path);
+	//> Sets object coords to /a xpos and /a ypos;
+	Battery(sf::RenderWindow *window, int l, int c, std::string path, int xpos=0, int ypos=0);
 
 
 	
@@ -39,14 +40,4 @@ public:
 		
 	//> Draws the sprite onto screen
 	void Draw();
-};
-
-
-
-class InfoGiver
-{
-	sf::RectangleShape black_back;
-	sf::Sprite * text_tab;
-public:
-	InfoGiver(int x, int y, int w, int h);
 };
