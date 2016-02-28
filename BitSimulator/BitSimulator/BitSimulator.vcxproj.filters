@@ -81,7 +81,7 @@
     <Image Include="..\Debug\Menu.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="piorun2.png">
+    <Image Include="Resource\Textures\Baterry\piorun2.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
