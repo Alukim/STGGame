@@ -5,8 +5,8 @@
 #include "Gates.h"
 #include "Game.h"
 #include "Utilities.h"
-#include "GUI.h";
-
+#include "GUI.h"
+#include "Bonus.h"
 int main(int argc, char **argv)
 {
 	const float fps = 1000 / 60;
@@ -33,7 +33,8 @@ int main(int argc, char **argv)
 	Music.setVolume(50);
 	Music.setLoop(true);
 	Music.play();
-	
+	Music.stop();
+	Volt bon(&window, &Font, 100);
 	while (window.isOpen())
 	{
 		// iookoko
@@ -74,6 +75,7 @@ int main(int argc, char **argv)
 		{
 			window.clear();
 			bat.Draw();
+			bon.Draw();
 			//
 			// Drawing objects here
 			//
