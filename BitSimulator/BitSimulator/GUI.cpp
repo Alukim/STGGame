@@ -90,7 +90,10 @@ void Battery::Load(int load_inc)
 	change = true;
 	load += load_inc;
 	if (load >= cap)
+	{
 		load = cap;
+		change = false;
+	}
 	else
 		waver = 0;
 }
