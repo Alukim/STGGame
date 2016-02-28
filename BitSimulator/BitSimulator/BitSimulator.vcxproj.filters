@@ -58,31 +58,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="..\Debug\Resource\Fonts\Comic\comic.ttf">
-      <Filter>Resource Files</Filter>
-    </Font>
-    <Font Include="..\Debug\Resource\Fonts\Comic\comicbd.ttf">
-      <Filter>Resource Files</Filter>
-    </Font>
-    <Font Include="..\Debug\Resource\Fonts\Comic\comici.ttf">
-      <Filter>Resource Files</Filter>
-    </Font>
-    <Font Include="..\Debug\Resource\Fonts\Comic\comicz.ttf">
-      <Filter>Resource Files</Filter>
-    </Font>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Debug\And.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Debug\bat.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\Debug\Menu.jpg">
+    <Image Include="Resource\Textures\Baterry\bat.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resource\Textures\Baterry\piorun2.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resource\Textures\Gates\And.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resource\Fonts\comic.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Resource\Fonts\comicbd.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Resource\Fonts\comici.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Resource\Fonts\comicz.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>
