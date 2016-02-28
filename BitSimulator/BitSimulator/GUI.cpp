@@ -20,7 +20,7 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 	batsprite.setTexture(*battxt);
 	batsprite.setPosition(sf::Vector2f(xpos, ypos));
 	sf::Image lightning;
-	lightning.loadFromFile("piorun2.png");
+	lightning.loadFromFile("Resource/Textures/Baterry/piorun2.png");
 	lightning.createMaskFromColor(sf::Color(255, 0, 255));
 	sf::Texture *lighttxt = new sf::Texture;
 	lighttxt->loadFromImage(lightning);
