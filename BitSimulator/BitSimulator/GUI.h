@@ -42,3 +42,21 @@ public:
 	//> Draws the sprite onto screen
 	void Draw();
 };
+
+class Points_class
+{
+	int points;
+	sf::Font * font;
+	sf::RenderWindow * ref;
+	sf::Text  text;
+	std::string s;
+	bool change;
+
+public:
+
+	Points_class(sf::RenderWindow * window, sf::Font * font_, int posx, int posy);
+	void Update(int inc);
+	void Draw();
+};
+
+

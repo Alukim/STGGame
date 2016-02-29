@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	sf::Clock UpdateClock;
 	sf::Event ev;
 	sf::Font Font;
+	sf::Font Font2;
 	sf::Music Music;
 	Battery bat(&window, 200, 5000, "Resource/Textures/Baterry/bat.png");
 
@@ -30,11 +31,17 @@ int main(int argc, char **argv)
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
 	}
+	if (!Font2.loadFromFile("Resource/Fonts/comic.ttf"))
+	{
+		MessageBox(NULL, "Font2 not found", "Error", NULL);
+		return 0;
+	}
 	Music.setVolume(50);
 	Music.setLoop(true);
 	Music.play();
 	Music.stop();
 	Volt bon(&window, &Font, 400);
+	Points_class points(&window, &Font2, 700, 0);
 	while (window.isOpen())
 	{
 		// iookoko
@@ -67,6 +74,10 @@ int main(int argc, char **argv)
 			{
 				bat.Dissipate(50);
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+			{
+				points.Update(10);
+			}
 			//
 			// updating object here
 			//
@@ -80,6 +91,7 @@ int main(int argc, char **argv)
 			window.clear();
 			bat.Draw();
 			bon.Draw();
+			points.Draw();
 			//
 			// Drawing objects here
 			//

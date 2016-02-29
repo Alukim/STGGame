@@ -16,13 +16,13 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 
 	sf::Texture * battxt = new sf::Texture;
 	battxt->loadFromImage(batimg);
-	
+
 	batsprite.setTexture(*battxt);
 	batsprite.setPosition(sf::Vector2f(xpos, ypos));
-	
+
 	lightimg.loadFromFile("Resource/Textures/Baterry/piorun2.png");
 	lightimg.createMaskFromColor(sf::Color(255, 0, 255));
-	
+
 	sf::Texture *lighttxt = new sf::Texture;
 	lighttxt->loadFromImage(lightimg);
 	lightsprite.setTexture(*lighttxt);
@@ -148,5 +148,39 @@ void Battery::Draw()
 	waver++;
 	ref->draw(batsprite);
 	ref->draw(lightsprite);
+	change = false;
+}
+
+Points_class::Points_class(sf::RenderWindow * window, sf::Font * font_, int posx, int posy)
+{
+	this->ref = window;
+	this->points = 0;
+	this->change = true;
+
+	font = font_;
+	//sf::Text * text = new sf::Text;
+
+	text.setFont(*font);
+	text.setPosition(posx, posy);
+	text.setColor(sf::Color(255, 0, 0));
+
+
+}
+
+void Points_class::Update(int inc)
+{
+	points += inc;
+	change = true;
+}
+
+void Points_class::Draw()
+{
+	
+	if (change)
+	{
+		s = "Points: " + std::to_string(points);
+		text.setString(s);
+	}
+	ref->draw(text);
 	change = false;
 }

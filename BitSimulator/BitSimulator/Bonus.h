@@ -56,10 +56,12 @@ inline Bonus<letter>::Bonus(sf::RenderWindow * win, sf::Font * font, int val)
 
 	sf::Texture *temp = new sf::Texture;
 	temp->loadFromFile("Resource/Textures/gwiazda.png");
+	temp->setSmooth(true);
 	sprite.setTexture(*temp);
 	
 	sf::FloatRect frect = sprite.getGlobalBounds();
 	sprite.setOrigin(frect.left + frect.width / 2, frect.top + frect.height / 2);
+
 
 	value = val;
 	window = win;
