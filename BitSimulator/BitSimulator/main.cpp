@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 	Music.setLoop(true);
 	Music.play();
 	Music.stop();
-	Volt bon(&window, &Font, 100);
+	Volt bon(&window, &Font, 400);
 	while (window.isOpen())
 	{
 		// iookoko
@@ -46,6 +46,10 @@ int main(int argc, char **argv)
 			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Escape)
 			{
 				window.close();
+			}
+			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::RAlt)
+			{
+				std::cout << "sunder" << std::endl;
 			}
 
 

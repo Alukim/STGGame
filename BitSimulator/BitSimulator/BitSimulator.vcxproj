@@ -120,7 +120,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bonus.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GUI.cpp" />
@@ -142,6 +141,7 @@
     <Image Include="Resource\Textures\Baterry\bat.png" />
     <Image Include="Resource\Textures\Baterry\piorun2.png" />
     <Image Include="Resource\Textures\Gates\And.png" />
+    <Image Include="Resource\Textures\gwiazda.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Resource\Fonts\comic.ttf" />
