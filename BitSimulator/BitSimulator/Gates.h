@@ -257,3 +257,98 @@ inline bool Multiplexer<address_inputs>::Propagate()
 	
 	else return false;
 }
+// -------------------------------------------Flip-Flop Class------------------------------------
+template <int input>
+class FlipD : public LogicElem<input>
+{
+private:
+	bool output;
+public:
+	bool Propagate() override;
+	FlipD();
+	~FlipD();
+};
+
+template<int input>
+inline FlipD<input>::FlipD() : LogicElem<2>
+{
+}
+
+template<int input>
+inline bool FlipD<input>::Propagate()
+{
+		if (_input[1])
+		{
+			_input[0] == output ? return true : return false;
+		}
+		else
+		{
+			//End Game 
+			return false;
+		}
+}
+
+
+template <int input>
+class FlipJK : public LogicElem<input>
+{
+private:
+	bool output;
+public:
+	bool Propagate() override;
+	FlipJK();
+	~FlipJK();
+};
+
+template<int input>
+inline FlipJK<input>::FlipJK() : LogicElem<3>
+{}
+
+template<int input>
+inline bool FlipJK<input>::Propagate()
+{
+	if (_input[1])
+	{
+		if (_input[0] && _input[])
+		{
+
+		}
+	}
+	else
+	{
+		//End Game 
+		return false;
+	}
+}
+
+template<int input>
+class FlipT : public LogicElem<input>
+{
+private:
+	bool output;
+public:
+	bool Propagate() override;
+	FlipT();
+	~FlipT();
+};
+
+template<int input>
+inline FlipT<input>::FlipT() : LogicElem<2>
+{}
+
+template<int input>
+inline bool FlipT<input>::Propagate()
+{
+	if (_input[1])
+	{
+		if (_input[0] && _input[])
+		{
+
+		}
+	}
+	else
+	{
+		//End Game 
+		return false;
+	}
+}
