@@ -257,14 +257,14 @@ inline bool Multiplexer<address_inputs>::Propagate()
 	
 	else return false;
 }
-// -------------------------------------------Flip-Flop Class------------------------------------
+// -------------------------------------------Flip-Flop D Class------------------------------------
 template <int input>
 class FlipD : public LogicElem<input>
 {
 private:
 	bool output;
 public:
-	bool Propagate() override;
+	bool Propagate() override; //_input[0] == D;
 	FlipD();
 	~FlipD();
 };
@@ -288,6 +288,7 @@ inline bool FlipD<input>::Propagate()
 		}
 }
 
+// -------------------------------------------Flip-Flop JK Class------------------------------------
 
 template <int input>
 class FlipJK : public LogicElem<input>
@@ -295,7 +296,7 @@ class FlipJK : public LogicElem<input>
 private:
 	bool output;
 public:
-	bool Propagate() override;
+	bool Propagate() override; // _input[0] == J && _input[2] == K
 	FlipJK();
 	~FlipJK();
 };
@@ -305,14 +306,21 @@ inline FlipJK<input>::FlipJK() : LogicElem<3>
 {}
 
 template<int input>
-inline bool FlipJK<input>::Propagate()
+inline bool FlipJK<input>::Propagate() 
 {
+	bool temp = false;
+	if (_input[0] && _input[2])
+	{
+		temp = !output;
+	}
+	else if ((!output && _input[0]) || (output && _input[2] == false))
+	{
+		temp = true;
+	}
+
 	if (_input[1])
 	{
-		if (_input[0] && _input[])
-		{
-
-		}
+		temp == output ? return true : return false;
 	}
 	else
 	{
@@ -321,13 +329,15 @@ inline bool FlipJK<input>::Propagate()
 	}
 }
 
+// -------------------------------------------Flip-Flop T Class------------------------------------
+
 template<int input>
 class FlipT : public LogicElem<input>
 {
 private:
 	bool output;
 public:
-	bool Propagate() override;
+	bool Propagate() override; //_input[0] == T;
 	FlipT();
 	~FlipT();
 };
@@ -339,12 +349,18 @@ inline FlipT<input>::FlipT() : LogicElem<2>
 template<int input>
 inline bool FlipT<input>::Propagate()
 {
+	bool temp;
+	if (_input[0])
+	{
+		temp = !output;
+	}
+	else
+	{
+		temp = output;
+	}
 	if (_input[1])
 	{
-		if (_input[0] && _input[])
-		{
-
-		}
+		temp == output ? return true : return false;
 	}
 	else
 	{
