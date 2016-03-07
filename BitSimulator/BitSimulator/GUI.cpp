@@ -49,9 +49,9 @@ void Battery::Refactor()
 
 
 					// estimating fill colour
-	if (res < 0.15f)		fill = sf::Color::Red;
-	else if (res < 0.4f)	fill = sf::Color(255, 165, 0);
-	else if (res < 0.7f)	fill = sf::Color::Yellow;
+	if (res < 0.3f)		fill = sf::Color::Red;
+	else if (res < 0.6f)	fill = sf::Color(255, 165, 0);
+	else if (res < 0.8f)	fill = sf::Color::Yellow;
 	else					fill = sf::Color::Green;
 
 
@@ -139,10 +139,12 @@ void Battery::Draw()
 
 		sf::Texture *batptr = new sf::Texture;
 		batptr->loadFromImage(batimg);
+		batptr->setSmooth(true);
 		batsprite.setTexture(*batptr);
 
 		sf::Texture *lightptr = new sf::Texture;
 		lightptr->loadFromImage(lightimg);
+		lightptr->setSmooth(true);
 		lightsprite.setTexture(*lightptr);
 	}
 	waver++;

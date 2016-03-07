@@ -23,7 +23,6 @@ public:
 	//> Pure virtual function used to simulate gate work
 	virtual bool Propagate() = 0;
 
-
 	//> Changes input digit on given track
 	//> /a index_in	- index of track
 	//> /a digit - digit value to be replaced
@@ -189,43 +188,21 @@ inline bool ANDGate<inputs>::Propagate()
 }
 
 
-// ===================================================== LOGIC ELEM CLASS ===========================================================
-template<int inputs>
-inline void LogicElem<inputs>::SetCustomInput(int index_in, bool digit)
-{
-	if (index_in > inputs)
-		throw "Out of scope";
-	else
-		_input[index_in] = digit;
-}
-
-
-template<int inputs>
-inline void LogicElem<inputs>::Burn()
-{
-	// runs animation of overheating gate
-}
-
-template<int inputs>
-inline void LogicElem<inputs>::Update()
-{
-	// updates logic
-}
-
+// ====================================================== MULTIPLEXER CLASS =====================================================
 template <int address_inputs>
 class Multiplexer : public LogicElem<address_inputs>
 {
 	bool strob;
 	bool *add_input;
 
-public : 
+public:
 	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path)
 	{
 		inputs_count = (int)pow(2, address_inputs);
 		_input = new bool[inputs_count];
 		for (int i = 0; i < inputs_count; i++)
 			_input[i] = false;
-		
+
 		add_input = new bool[address_inputs];
 		for (int i = 0; i < address_inputs; i++)
 			add_input[i] = false;
@@ -254,6 +231,36 @@ inline bool Multiplexer<address_inputs>::Propagate()
 
 	if (_input[i])
 		return true;
-	
+
 	else return false;
+}
+
+
+
+
+
+
+// ===================================================== LOGIC ELEM CLASS ===========================================================
+template<int inputs>
+inline void LogicElem<inputs>::SetCustomInput(int index_in, bool digit)
+{
+	if (index_in > inputs)
+		throw "Out of scope";
+	else
+		_input[index_in] = digit;
+}
+
+
+template<int inputs>
+inline void LogicElem<inputs>::Burn()
+{
+
+	// runs animation of overheating gate
+}
+
+template<int inputs>
+inline void LogicElem<inputs>::Update()
+{
+	Move(-1, -1);
+	// updates logic
 }

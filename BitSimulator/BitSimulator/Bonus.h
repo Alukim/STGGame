@@ -1,23 +1,18 @@
 #pragma once
 #include <string>
 #include <SFML\Graphics.hpp>
+#include "GameObject.h"
 template <char letter>
-class Bonus
+class Bonus : public GameObject
 {
-	sf::RenderWindow *window;	// window pointer bonus will be drawn in
-						
-	sf::Sprite sprite;			// sprite of bonus
-	sf::Text text;				// letter of bonus
-
-	bool factor;
-
+	bool mod;
 	int value;					// bonus value
-	
+
 public:
 	static int cap;
-	Bonus<letter>(sf::RenderWindow *win, sf::Font *font, int val);
+	Bonus<letter>(sf::RenderWindow *win, std::string path, int val);
 
-	void Draw();
+	void Draw() override;
 };
 
 typedef Bonus<'A'> Amper;
@@ -26,44 +21,41 @@ typedef Bonus<'V'> Volt;
 
 int Volt::cap = 500;
 
-	
+
 
 template<char letter>
 inline void Bonus<letter>::Draw()
 {
-	sprite.setPosition(500, 500);
-	sprite.rotate(1.0f);
+	shape.rotate(0.5f);
+	sf::Vector2f scale = shape.getScale();
 
-	const sf::Vector2f scale = sprite.getScale();
-	
-	if (scale.x < 0.6f)		factor = false;
-	else if(scale.x > 1.0f)	factor = true;
+	if (scale.x < 0.2f)		mod = false;
+	else if (scale.x >= 1.0f) mod = true;
 
-	if (factor)	sprite.setScale(scale.x - 0.01f, scale.y - 0.01f);
-	else sprite.setScale(scale.x + 0.01f, scale.y + 0.01f);
+	if (mod)
+	{
+		scale.x -= 0.01f; 
+		scale.y -= 0.01f;
+	}
+	else
+	{
+		scale.x += 0.01f; 
+		scale.y += 0.01f;
+	}
+	shape.setScale(sf::Vector2f(scale.x, scale.y));
 
-	window->draw(sprite);
-	window->draw(text);
+	sf::IntRect pos = GetLayout();
+	shape.setPosition(sf::Vector2f(pos.left, pos.top + pos.height/2));
+	window->draw(shape);
 }
 
 template<char letter>
-inline Bonus<letter>::Bonus(sf::RenderWindow * win, sf::Font * font, int val)
+inline Bonus<letter>::Bonus(sf::RenderWindow * win, std::string path, int val) : GameObject(win, path, sf::Color::Black)
 {
-	
-	text.setFont(*font);
-	text.setString(sf::String(letter));
-	text.setColor(sf::Color::Magenta);
-
-	sf::Texture *temp = new sf::Texture;
-	temp->loadFromFile("Resource/Textures/gwiazda.png");
-	temp->setSmooth(true);
-	sprite.setTexture(*temp);
-	
-	sf::FloatRect frect = sprite.getGlobalBounds();
-	sprite.setOrigin(frect.left + frect.width / 2, frect.top + frect.height / 2);
-
-
+	mod = true;
 	value = val;
 	window = win;
-	factor = true;
+	shape.setScale(sf::Vector2f(1.0f, 1.0f));
+	sf::FloatRect pos = shape.getLocalBounds();
+	shape.setOrigin(pos.left + pos.width / 2, pos.top + pos.height / 2);
 }

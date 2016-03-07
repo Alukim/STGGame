@@ -20,7 +20,7 @@ public:
 
 	//> constructor
 	//> /a path - string containing path to the texture
-	GameObject(RenderWindow *win, std::string path,sf::Color transmask = sf::Color(0,0,0), unsigned int x = 0, unsigned int y = 0 );
+	GameObject(RenderWindow *win, std::string path,sf::Color transmask = sf::Color::Transparent, unsigned int x = 0, unsigned int y = 0 );
 
 	//> sets position and modifies intmask of object
 	void SetPosition(int x, int y);
@@ -36,7 +36,12 @@ public:
 	//> moves an object by
 	//> /a x in x-axis
 	//> /a y in y-axis
-	void Move(int x, int y);
+	virtual void Move(int x, int y);
+
+	//> sets an origin of sprite
+	//> /a x in x-axis
+	//> /a y in y-axis;
+	void SetOrigin(float x, float y);
 
 	//> returns current dimensions of an object
 	IntRect GetLayout() const;
@@ -44,7 +49,7 @@ public:
 	void operator = (GameObject &ref);
 
 	//> draws the object into render context
-	virtual void Draw() const;
+	virtual void Draw();
 
 	virtual ~GameObject();
 };

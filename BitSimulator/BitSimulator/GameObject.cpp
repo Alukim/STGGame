@@ -27,6 +27,12 @@ void GameObject::Move(int x, int y)
 {
 	rect.left += x;
 	rect.top += y;
+	shape.setPosition(sf::Vector2f(rect.left, rect.top));
+}
+
+void GameObject::SetOrigin(float x, float y)
+{
+	shape.setOrigin(sf::Vector2f(x, y));
 }
 
 IntRect GameObject::GetLayout() const
@@ -89,10 +95,12 @@ GameObject::GameObject(RenderWindow *win, std::string path,  sf::Color transmask
 		std::cerr << ("Game files seem to be missing. Try reinstalling your game.");
 		throw NULL;
 	}
-	if (transmask != sf::Color(0, 0, 0))
+	if (transmask != sf::Color::Transparent)
 		img.createMaskFromColor(transmask);
 	
 	temp->loadFromImage(img);
+	temp->setSmooth(true);
+
 	shape.setTexture(temp, true);
 	rect.left = x;
 	rect.top = y;
@@ -104,7 +112,7 @@ GameObject::GameObject(RenderWindow *win, std::string path,  sf::Color transmask
 }
 
 
-void GameObject::Draw(void) const
+void GameObject::Draw(void)
 {
 	window->draw(shape);
 }
