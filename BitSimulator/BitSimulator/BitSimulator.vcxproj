@@ -142,6 +142,7 @@
   <ItemGroup>
     <Image Include="Resource\Textures\Baterry\bat.png" />
     <Image Include="Resource\Textures\Baterry\piorun2.png" />
+    <Image Include="Resource\Textures\bit.png" />
     <Image Include="Resource\Textures\Gates\And.png" />
     <Image Include="Resource\Textures\gwiazda.png" />
     <Image Include="Resource\Textures\track.png" />
