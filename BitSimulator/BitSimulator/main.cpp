@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	AND2 martha(window, "Resource/Textures/Gates/And.png");
 	track m(window, "Resource/Textures/track.png", 0, 200);
 
-	m.AddElem(&martha);
+	//m.AddElem(&martha);
 	if (!Music.openFromFile("Resource/Music/Menu.ogg"))
 	{
 		MessageBox(NULL, "Music not found", "Error", NULL);
@@ -76,9 +76,11 @@ int main(int argc, char **argv)
 				points.Update(400);
 			}
 
+			// BEGIN UPDATE SECTION
+			// 
 			//
-			// updating object here
-			//
+
+			// END OF UPDATE SECTION
 			m.Update();
 			UpdateClock.restart();
 		}

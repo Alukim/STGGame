@@ -3,6 +3,9 @@
 track::track(sf::RenderWindow * win, std::string path, int x, int y)
 {
 	window = win;
+	offset.x = x;
+	offset.y = y;
+
 	sf::Texture *text = new sf::Texture;
 
 	text->loadFromFile(path);
@@ -12,6 +15,7 @@ track::track(sf::RenderWindow * win, std::string path, int x, int y)
 
 	sprite.setTexture(*text);
 	sprite.setPosition(sf::Vector2f(x, y));
+	width = sprite.getGlobalBounds().width;
 }
 
 void track::Attach(GameObject * ptr)
@@ -19,7 +23,7 @@ void track::Attach(GameObject * ptr)
 	bitptr = ptr;
 	sf::FloatRect pos = sprite.getGlobalBounds();
 
-	bitptr->SetPosition(pos.width * 0.1, pos.top);
+	bitptr->SetPosition(pos.width * 0.03, pos.top);
 }
 
 GameObject* track::Detach()
@@ -32,12 +36,14 @@ GameObject* track::Detach()
 void track::Update()
 {
 	std::list<GameObject *>::iterator it = draw_list.begin();
-	
+	offset.x += 2;
 	for (it; it != draw_list.end(); it++)
 	{
-		(*it)->Move(-2, 0);
+		(*it)->Move(-1, 0);
 	}
 	sprite.move(sf::Vector2f(-2, 0));
+	if (offset.x > width)
+		offset.x = 0;
 }
 
 void track::AddElem(GameObject * new_elem)
@@ -52,6 +58,9 @@ void track::AddElem(GameObject * new_elem)
 
 void track::Draw()
 {
+	sprite.setPosition(sf::Vector2f(-offset.x, offset.y));
+	window->draw(sprite);
+	sprite.setPosition(sf::Vector2f(width - offset.x, offset.y));
 	window->draw(sprite);
 
 	if (bitptr)
