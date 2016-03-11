@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	m.AddElem(&bon);
 	m.Attach(bit);
 
-	Points_class points(window, &Font, 700, 0);
+	Points_class points(window, &Font);
 	while (window->isOpen())
 	{
 

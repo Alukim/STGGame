@@ -169,17 +169,34 @@ void Battery::Draw()
 	change = false;
 }
 
-Points_class::Points_class(sf::RenderWindow * window, sf::Font * font_, int posx, int posy)
+sf::Vector2f Points_class::set_position()
+{
+	int pos_x, pos_y;
+
+	sf::Vector2u curr_mode = ref->getSize();
+	int screen_x = curr_mode.x;
+	int screen_y = curr_mode.y;
+	//szerokosc cyfry 15 przy wysokosci 25
+	int x = (15 * text.getCharacterSize()) / 25;
+
+	pos_x = screen_x - (7 * x /*Points:*/ + 7 * x /*ilosc pkt*/);
+	pos_y = screen_y / 100;
+
+
+	return sf::Vector2f(pos_x, pos_y);
+}
+
+Points_class::Points_class(sf::RenderWindow * window, sf::Font * font_)
 {
 	this->ref = window;
 	this->points = 0;
 	this->change = true;
-
+	//text.setCharacterSize(70);
 	font = font_;
 	//sf::Text * text = new sf::Text;
 
 	text.setFont(*font);
-	text.setPosition(posx, posy);
+	text.setPosition(set_position());
 	text.setColor(sf::Color(255, 0, 0));
 
 
@@ -193,7 +210,7 @@ void Points_class::Update(int inc)
 
 void Points_class::Draw()
 {
-	
+
 	if (change)
 	{
 		s = "Points: " + std::to_string(points);

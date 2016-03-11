@@ -52,10 +52,11 @@ class Points_class
 	sf::Text  text;
 	std::string s;
 	bool change;
+	sf::Vector2f set_position();
 
 public:
 
-	Points_class(sf::RenderWindow * window, sf::Font * font_, int posx, int posy);
+	Points_class(sf::RenderWindow * window, sf::Font * font_);
 	void Update(int inc);
 	void Draw();
 };
