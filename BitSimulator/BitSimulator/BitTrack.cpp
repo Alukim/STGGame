@@ -17,6 +17,9 @@ track::track(sf::RenderWindow * win, std::string path, int x, int y)
 void track::Attach(GameObject * ptr)
 {
 	bitptr = ptr;
+	sf::FloatRect pos = sprite.getGlobalBounds();
+
+	bitptr->SetPosition(pos.width * 0.1, pos.top);
 }
 
 GameObject* track::Detach()
@@ -34,6 +37,7 @@ void track::Update()
 	{
 		(*it)->Move(-2, 0);
 	}
+	sprite.move(sf::Vector2f(-2, 0));
 }
 
 void track::AddElem(GameObject * new_elem)
@@ -49,6 +53,9 @@ void track::AddElem(GameObject * new_elem)
 void track::Draw()
 {
 	window->draw(sprite);
+
+	if (bitptr)
+		bitptr->Draw();
 
 	std::list<GameObject *>::iterator it = draw_list.begin();
 	for (it; it != draw_list.end(); it++)

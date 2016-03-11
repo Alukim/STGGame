@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	Battery bat(window, 200, 5000, "Resource/Textures/Baterry/bat.png");
 
 	AND2 martha(window, "Resource/Textures/Gates/And.png");
-	track m(window, "Resource/Textures/track.png", 0, 300);
+	track m(window, "Resource/Textures/track.png", 0, 200);
 
 	m.AddElem(&martha);
 	if (!Music.openFromFile("Resource/Music/Menu.ogg"))
@@ -39,10 +39,12 @@ int main(int argc, char **argv)
 
 	if (!Font.loadFromFile("Resource/Fonts/comic.ttf"))
 	{
+
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
 	}
 
+	GameObject *bit = new GameObject(window, "Resource/Textures/bit.png", sf::Color(255, 0, 255));
 
 	Music.setVolume(50);
 	Music.setLoop(true);
@@ -51,6 +53,7 @@ int main(int argc, char **argv)
 	Volt bon(window, "Resource/Textures/gwiazda.png", 400);
 
 	m.AddElem(&bon);
+	m.Attach(bit);
 
 	Points_class points(window, &Font, 700, 0);
 	while (window->isOpen())
@@ -59,8 +62,7 @@ int main(int argc, char **argv)
 		// Update section
 		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
 		{
-			m.Update();
-
+			
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				bat.Load(500);
@@ -77,6 +79,7 @@ int main(int argc, char **argv)
 			//
 			// updating object here
 			//
+			m.Update();
 			UpdateClock.restart();
 		}
 
@@ -114,7 +117,7 @@ int main(int argc, char **argv)
 			frames = 0;
 			fpsCounter.restart();
 		}
-		sf::sleep(sf::milliseconds(1));
+		//sf::sleep(sf::milliseconds(1));
 	}
 	return EXIT_SUCCESS;
 }

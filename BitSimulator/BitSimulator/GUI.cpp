@@ -88,27 +88,40 @@ void Battery::Refactor()
 
 void Battery::Load(int load_inc)
 {
-	change = true;
-	load += load_inc;
-	if (load >= cap)
+	
+	if (load < cap && (load + load_inc) > cap)
 	{
 		load = cap;
-		change = false;
+		Refactor();
+		change = true;
 	}
-	else
-		waver = 0;
-
-	Refactor();
+	else if(load + load_inc < cap)
+	{
+		load += load_inc;
+		Refactor();
+		change = true;
+	}	
 }
 
 void Battery::Dissipate(int load_dnc)
 {
 	change = true;
-	load -= load_dnc;
-	if (load < 0)
-		load = 0;
 
-	Refactor();
+	if (load > 0 && (load - load_dnc) < 0)
+	{
+		load -= load_dnc;
+		load = 0;
+		Refactor();
+	}
+	else if (load == 0)
+	{
+		change = false;
+	}
+	else
+	{
+		load -= load_dnc;
+		Refactor();
+	}
 }
 
 void Battery::Draw()
@@ -142,12 +155,12 @@ void Battery::Draw()
 
 		sf::Texture *batptr = new sf::Texture;
 		batptr->loadFromImage(batimg);
-		//batptr->setSmooth(true);
+		batptr->setSmooth(true);
 		batsprite.setTexture(*batptr);
 
 		sf::Texture *lightptr = new sf::Texture;
 		lightptr->loadFromImage(lightimg);
-		//lightptr->setSmooth(true);
+		lightptr->setSmooth(true);
 		lightsprite.setTexture(*lightptr);
 	}
 	waver++;
