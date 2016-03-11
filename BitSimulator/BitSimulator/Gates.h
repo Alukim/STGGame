@@ -23,6 +23,7 @@ public:
 	//> Pure virtual function used to simulate gate work
 	virtual bool Propagate() = 0;
 
+
 	//> Changes input digit on given track
 	//> /a index_in	- index of track
 	//> /a digit - digit value to be replaced
@@ -188,21 +189,43 @@ inline bool ANDGate<inputs>::Propagate()
 }
 
 
-// ====================================================== MULTIPLEXER CLASS =====================================================
+// ===================================================== LOGIC ELEM CLASS ===========================================================
+template<int inputs>
+inline void LogicElem<inputs>::SetCustomInput(int index_in, bool digit)
+{
+	if (index_in > inputs)
+		throw "Out of scope";
+	else
+		_input[index_in] = digit;
+}
+
+
+template<int inputs>
+inline void LogicElem<inputs>::Burn()
+{
+	// runs animation of overheating gate
+}
+
+template<int inputs>
+inline void LogicElem<inputs>::Update()
+{
+	// updates logic
+}
+
 template <int address_inputs>
 class Multiplexer : public LogicElem<address_inputs>
 {
 	bool strob;
 	bool *add_input;
 
-public:
+public : 
 	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path)
 	{
 		inputs_count = (int)pow(2, address_inputs);
 		_input = new bool[inputs_count];
 		for (int i = 0; i < inputs_count; i++)
 			_input[i] = false;
-
+		
 		add_input = new bool[address_inputs];
 		for (int i = 0; i < address_inputs; i++)
 			add_input[i] = false;
@@ -231,36 +254,117 @@ inline bool Multiplexer<address_inputs>::Propagate()
 
 	if (_input[i])
 		return true;
-
+	
 	else return false;
 }
-
-
-
-
-
-
-// ===================================================== LOGIC ELEM CLASS ===========================================================
-template<int inputs>
-inline void LogicElem<inputs>::SetCustomInput(int index_in, bool digit)
+// -------------------------------------------Flip-Flop D Class------------------------------------
+template <int input>
+class FlipD : public LogicElem<input>
 {
-	if (index_in > inputs)
-		throw "Out of scope";
+private:
+	bool output;
+public:
+	bool Propagate() override; //_input[0] == D;
+	FlipD();
+	~FlipD();
+};
+
+template<int input>
+inline FlipD<input>::FlipD() : LogicElem<2>
+{
+}
+
+template<int input>
+inline bool FlipD<input>::Propagate()
+{
+		if (_input[1])
+		{
+			_input[0] == output ? return true : return false;
+		}
+		else
+		{
+			//End Game 
+			return false;
+		}
+}
+
+// -------------------------------------------Flip-Flop JK Class------------------------------------
+
+template <int input>
+class FlipJK : public LogicElem<input>
+{
+private:
+	bool output;
+public:
+	bool Propagate() override; // _input[0] == J && _input[2] == K
+	FlipJK();
+	~FlipJK();
+};
+
+template<int input>
+inline FlipJK<input>::FlipJK() : LogicElem<3>
+{}
+
+template<int input>
+inline bool FlipJK<input>::Propagate() 
+{
+	bool temp = false;
+	if (_input[0] && _input[2])
+	{
+		temp = !output;
+	}
+	else if ((!output && _input[0]) || (output && _input[2] == false))
+	{
+		temp = true;
+	}
+
+	if (_input[1])
+	{
+		temp == output ? return true : return false;
+	}
 	else
-		_input[index_in] = digit;
+	{
+		//End Game 
+		return false;
+	}
 }
 
+// -------------------------------------------Flip-Flop T Class------------------------------------
 
-template<int inputs>
-inline void LogicElem<inputs>::Burn()
+template<int input>
+class FlipT : public LogicElem<input>
 {
+private:
+	bool output;
+public:
+	bool Propagate() override; //_input[0] == T;
+	FlipT();
+	~FlipT();
+};
 
-	// runs animation of overheating gate
-}
+template<int input>
+inline FlipT<input>::FlipT() : LogicElem<2>
+{}
 
-template<int inputs>
-inline void LogicElem<inputs>::Update()
+template<int input>
+inline bool FlipT<input>::Propagate()
 {
-	Move(-1, -1);
-	// updates logic
+	bool temp;
+	if (_input[0])
+	{
+		temp = !output;
+	}
+	else
+	{
+		temp = output;
+	}
+	if (_input[1])
+	{
+		temp == output ? return true : return false;
+	}
+	else
+	{
+		//End Game 
+		return false;
+	}
 }
