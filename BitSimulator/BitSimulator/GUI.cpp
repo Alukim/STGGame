@@ -5,6 +5,7 @@
 
 Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int xpos, int ypos)
 {
+	prevheight = 1000;
 	change = true;
 	waver = 0;
 	ref = window;
@@ -45,7 +46,7 @@ void Battery::Refactor()
 	float res = (float)load / cap; // fullfillment ratio
 
 
-	sf::Color fill;	// colour battery will be filled with
+	sf::Color fill;	// colour which the battery will be filled with
 
 
 					// estimating fill colour
@@ -96,6 +97,8 @@ void Battery::Load(int load_inc)
 	}
 	else
 		waver = 0;
+
+	Refactor();
 }
 
 void Battery::Dissipate(int load_dnc)
@@ -104,6 +107,8 @@ void Battery::Dissipate(int load_dnc)
 	load -= load_dnc;
 	if (load < 0)
 		load = 0;
+
+	Refactor();
 }
 
 void Battery::Draw()
@@ -113,8 +118,6 @@ void Battery::Draw()
 	if (waver == 0 || waver == 16)	change = true;
 	if (change)
 	{
-		Refactor();
-
 		sf::Vector2u dim = batimg.getSize();
 		if (load == cap)
 		{
@@ -139,12 +142,12 @@ void Battery::Draw()
 
 		sf::Texture *batptr = new sf::Texture;
 		batptr->loadFromImage(batimg);
-		batptr->setSmooth(true);
+		//batptr->setSmooth(true);
 		batsprite.setTexture(*batptr);
 
 		sf::Texture *lightptr = new sf::Texture;
 		lightptr->loadFromImage(lightimg);
-		lightptr->setSmooth(true);
+		//lightptr->setSmooth(true);
 		lightsprite.setTexture(*lightptr);
 	}
 	waver++;

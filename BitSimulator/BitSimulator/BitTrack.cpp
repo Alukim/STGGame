@@ -7,9 +7,23 @@ track::track(sf::RenderWindow * win, std::string path, int x, int y)
 
 	text->loadFromFile(path);
 	text->setSmooth(true);
+	
+	bitptr = NULL;
 
 	sprite.setTexture(*text);
 	sprite.setPosition(sf::Vector2f(x, y));
+}
+
+void track::Attach(GameObject * ptr)
+{
+	bitptr = ptr;
+}
+
+GameObject* track::Detach()
+{
+	GameObject *get = bitptr;
+	bitptr = NULL;
+	return get;
 }
 
 void track::Update()

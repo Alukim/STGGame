@@ -144,6 +144,7 @@
     <Image Include="Resource\Textures\Baterry\piorun2.png" />
     <Image Include="Resource\Textures\Gates\And.png" />
     <Image Include="Resource\Textures\gwiazda.png" />
+    <Image Include="Resource\Textures\track.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Resource\Fonts\comic.ttf" />

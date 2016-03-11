@@ -79,6 +79,9 @@
     <Image Include="Resource\Textures\gwiazda.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resource\Textures\track.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Resource\Fonts\comic.ttf">

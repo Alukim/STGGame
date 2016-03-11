@@ -10,9 +10,11 @@
 #include "BitTrack.h"
 int main(int argc, char **argv)
 {
-	const int fps = 1000 / 120;
-	const int ups = 1000 / 70;
-	sf::RenderWindow window(sf::VideoMode(1200, 800, 32), "BitSimulator", sf::Style::Default);
+	const int fps = 1000 / 100;
+	const int ups = 1000 / 100;
+	
+	sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(1200, 800, 32), "BitSimulator", sf::Style::Default);
+	
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Clock fpsCounter;
@@ -23,10 +25,10 @@ int main(int argc, char **argv)
 	sf::Font Font;
 
 	sf::Music Music;
-	Battery bat(&window, 200, 5000, "Resource/Textures/Baterry/bat.png");
-	
-	AND2 martha(&window, "Resource/Textures/Gates/And.png");
-	track m(&window, "Resource/Textures/track.png", 0, 300);
+	Battery bat(window, 200, 5000, "Resource/Textures/Baterry/bat.png");
+
+	AND2 martha(window, "Resource/Textures/Gates/And.png");
+	track m(window, "Resource/Textures/track.png", 0, 300);
 
 	m.AddElem(&martha);
 	if (!Music.openFromFile("Resource/Music/Menu.ogg"))
@@ -40,42 +42,28 @@ int main(int argc, char **argv)
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
 	}
-	/*if (!Font2.loadFromFile("Resource/Fonts/comic.ttf"))
-	{
-		MessageBox(NULL, "Font2 not found", "Error", NULL);
-		return 0;
-	}*/
+
+
 	Music.setVolume(50);
 	Music.setLoop(true);
 	Music.play();
 	Music.stop();
-	Volt bon(&window, "Resource/Textures/gwiazda.png", 400);
-	
+	Volt bon(window, "Resource/Textures/gwiazda.png", 400);
+
 	m.AddElem(&bon);
 
-	Points_class points(&window, &Font, 700, 0);
-	while (window.isOpen())
+	Points_class points(window, &Font, 700, 0);
+	while (window->isOpen())
 	{
-		// iookoko
-		// Events handler section
-		while (window.pollEvent(ev))
-		{
-			if (ev.type == sf::Event::Closed)
-				window.close();
-			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Escape)
-			{
-				window.close();
-			}
-
-		}
 
 		// Update section
 		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
 		{
+			m.Update();
 
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				bat.Load(50);
+				bat.Load(500);
 			}
 			else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 			{
@@ -85,19 +73,30 @@ int main(int argc, char **argv)
 			{
 				points.Update(400);
 			}
-			m.Update();
+
 			//
 			// updating object here
 			//
 			UpdateClock.restart();
 		}
 
+		// Events handler section
+		while (window->pollEvent(ev))
+		{
+			if (ev.type == sf::Event::Closed)
+				window->close();
+
+			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Escape)
+			{
+				window->close();
+			}
+		}
 
 		// Drawing section
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{
 			frames++;
-			window.clear();
+			window->clear();
 			bat.Draw();
 			bon.Draw();
 			points.Draw();
@@ -105,7 +104,7 @@ int main(int argc, char **argv)
 			//
 			// Drawing objects here
 			//
-			window.display();
+			window->display();
 			RenderClock.restart();
 		}
 
