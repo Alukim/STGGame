@@ -89,7 +89,7 @@ void Battery::Refactor()
 void Battery::Load(int load_inc)
 {
 	
-	if (load < cap && (load + load_inc) > cap)
+	if (load < cap && (load + load_inc) >= cap)
 	{
 		load = cap;
 		Refactor();
@@ -198,8 +198,6 @@ Points_class::Points_class(sf::RenderWindow * window, sf::Font * font_)
 	text.setFont(*font);
 	text.setPosition(set_position());
 	text.setColor(sf::Color(255, 0, 0));
-
-
 }
 
 void Points_class::Update(int inc)
