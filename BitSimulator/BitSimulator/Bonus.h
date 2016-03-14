@@ -13,6 +13,7 @@ public:
 	Bonus<letter>(sf::RenderWindow *win, std::string path, int val);
 
 	void Draw() override;
+	int GetBonus();
 };
 
 typedef Bonus<'A'> Amper;
@@ -47,6 +48,12 @@ inline void Bonus<letter>::Draw()
 	sf::IntRect pos = GetLayout();
 	shape.setPosition(sf::Vector2f(pos.left, pos.top + pos.height/2));
 	window->draw(shape);
+}
+
+template<char letter>
+inline int Bonus<letter>::GetBonus()
+{
+	return value;
 }
 
 template<char letter>

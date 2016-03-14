@@ -33,6 +33,8 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 
 	batsprite.setScale(sf::Vector2f(0.5f, 0.5f));
 	lightsprite.setScale(sf::Vector2f(0.5f, 0.5f));
+
+	Refactor();
 }
 
 

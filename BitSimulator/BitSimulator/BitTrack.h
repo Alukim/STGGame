@@ -2,9 +2,33 @@
 #include "GameObject.h"
 #include <SFML\Graphics.hpp>
 #include "Gates.h"
+#include "Bonus.h"
+#include "GUI.h"
+#include "Utilities.h"
 #include <list>
-class track
+
+
+const std::string textpath = "Resource/Textures/";
+const std::string musicpath = "Resource/Music/";
+const std::string fontpath = "Resource/Fonts/";
+
+enum Events
 {
+	None = 0,
+	VBonusHit ,
+	ABonusHit,
+	CorrectElemEnter,
+	WrongElemEnter,
+	BitDestroyed,
+	CheckpointReached,
+	Run_Off_Fuel,
+	Bit_Inv_Collision
+};
+class Tracklist;
+
+class Track
+{
+private:
 	int width;							//> width of track
 	sf::RenderWindow *window;			//> pointer to window the track will be drawn in
 	sf::Sprite sprite;					//> sprite of track
@@ -13,25 +37,54 @@ class track
 	sf::Vector2i offset;				//> offset of the track
 	
 public:
-	
+	friend Tracklist;
+
 	//> construcor
-	track(sf::RenderWindow *win, std::string path, int x, int y);
+	Track(sf::RenderWindow *win, std::string path, int x, int y);
 
 	//> Attaches a bit to the track
 	//> /a ptr - pointer to bit object
 	void Attach(GameObject *ptr);
+
+	
 
 	//> Detaches a bit from the track
 	//> Returns pointer to detached bit
 	GameObject* Detach();
 
 	//> Updates the whole track(objects within included)
-	void Update();
+	int Update();
 
 	//> Adds an elemement to the track
 	//> /a new_elem - pointer to new element object
 	void AddElem(GameObject *new_elem);
 
+	GameObject * GetElem();
+
 	//> Draws whole track
+	void Draw();
+};
+
+
+class Tracklist
+{
+
+private:
+	int size;				//> contains max quantity of tracks
+	int track_num;			//> track number in list order, where bit is attached
+	GameObject *bit;		//> pointer to bit
+	Track **list;			//> list of tracks
+
+	Battery *volts;			//> volt load
+	Battery *amps;			//> amper load
+
+public:
+
+	Tracklist(sf::RenderWindow * window, GameObject *bitptr);
+	void AddTrack(Track *track, int pos);
+	void AddElem(GameObject *new_elem, int track);
+	void Update();
+	void BitUp();
+	void BitDown();
 	void Draw();
 };

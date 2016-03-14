@@ -10,6 +10,10 @@ bool Intersect(FloatRect &elem1, Vector2i &elem2)
 		return false;
 }
 
+bool Intersect(IntRect &elem1, IntRect &elem2)
+{
+	return elem1.intersects(elem2);
+}
 void ChangeColor(sf::Image * ptr, sf::Color col1, sf::Color col2)
 {
 	Vector2u dim = ptr->getSize();

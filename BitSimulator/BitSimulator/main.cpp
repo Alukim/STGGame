@@ -10,9 +10,9 @@
 #include "BitTrack.h"
 int main(int argc, char **argv)
 {
-	const int fps = 1000 / 100;
+	const int fps = 1000 / 200;
 	const int ups = 1000 / 100;
-	
+
 	sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(1200, 800, 32), "BitSimulator", sf::Style::Default);
 	
 	sf::Clock RenderClock;
@@ -23,65 +23,55 @@ int main(int argc, char **argv)
 
 	sf::Event ev;
 	sf::Font Font;
-
 	sf::Music Music;
-	Battery bat(window, 200, 5000, "Resource/Textures/Baterry/bat.png");
+	
+	GameObject *bit = new GameObject(window, textpath + "bit.png", sf::Color(255, 0, 255));
+	Volt bon(window, textpath + "gwiazda.png", 400);
 
-	AND2 martha(window, "Resource/Textures/Gates/And.png");
-	track m(window, "Resource/Textures/track.png", 0, 200);
+	AND2 martha(window, textpath + "Gates/And.png");
+	Tracklist map(window, bit);
 
-	//m.AddElem(&martha);
-	if (!Music.openFromFile("Resource/Music/Menu.ogg"))
+	map.AddElem(&bon, 0);
+
+	if (!Music.openFromFile(musicpath + "Menu.ogg"))
 	{
 		MessageBox(NULL, "Music not found", "Error", NULL);
 		return 0;
 	}
 
-	if (!Font.loadFromFile("Resource/Fonts/comic.ttf"))
+	if (!Font.loadFromFile(fontpath + "comic.ttf"))
 	{
-
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
 	}
-
-	GameObject *bit = new GameObject(window, "Resource/Textures/bit.png", sf::Color(255, 0, 255));
 
 	Music.setVolume(50);
 	Music.setLoop(true);
 	Music.play();
 	Music.stop();
-	Volt bon(window, "Resource/Textures/gwiazda.png", 400);
-
-	m.AddElem(&bon);
-	m.Attach(bit);
 
 	Points_class points(window, &Font);
 	while (window->isOpen())
 	{
-
 		// Update section
 		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
 		{
 			
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				bat.Load(500);
 			}
 			else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 			{
-				bat.Dissipate(50);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 			{
-				points.Update(400);
 			}
 
 			// BEGIN UPDATE SECTION
-			// 
-			//
 
 			// END OF UPDATE SECTION
-			m.Update();
+			
+			map.Update();
 			UpdateClock.restart();
 		}
 
@@ -95,20 +85,27 @@ int main(int argc, char **argv)
 			{
 				window->close();
 			}
+			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Down)
+			{
+				map.BitDown();
+			}
+			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Up)
+			{
+				map.BitUp();
+			}
 		}
 
 		// Drawing section
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{
-			frames++;
-			window->clear();
-			bat.Draw();
-			bon.Draw();
-			points.Draw();
-			m.Draw();
 			//
 			// Drawing objects here
 			//
+
+			frames++;
+			window->clear();
+			points.Draw();
+			map.Draw();
 			window->display();
 			RenderClock.restart();
 		}
@@ -119,7 +116,7 @@ int main(int argc, char **argv)
 			frames = 0;
 			fpsCounter.restart();
 		}
-		//sf::sleep(sf::milliseconds(1));
+		sf::sleep(sf::milliseconds(2));
 	}
 	return EXIT_SUCCESS;
 }
