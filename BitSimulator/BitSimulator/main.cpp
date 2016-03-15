@@ -8,6 +8,7 @@
 #include "GUI.h"
 #include "Bonus.h"
 #include "BitTrack.h"
+
 int main(int argc, char **argv)
 {
 	const int fps = 1000 / 200;
@@ -15,6 +16,8 @@ int main(int argc, char **argv)
 
 	sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(1200, 800, 32), "BitSimulator", sf::Style::Default);
 	
+	window->setVerticalSyncEnabled(true);
+
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
 	sf::Clock fpsCounter;
@@ -25,21 +28,17 @@ int main(int argc, char **argv)
 	sf::Font Font;
 	sf::Music Music;
 	
-	GameObject *bit = new GameObject(window, textpath + "bit.png", sf::Color(255, 0, 255));
-	Volt bon(window, textpath + "gwiazda.png", 400);
+	Tracklist map(window);
 
-	AND2 martha(window, textpath + "Gates/And.png");
-	Tracklist map(window, bit);
-
-	map.AddElem(&bon, 0);
-
-	if (!Music.openFromFile(musicpath + "Menu.ogg"))
+	map.AddElem(new Volt(window, txtpath + "gwiazda.png", 400), 0);
+	map.AddElem(new AND2(window, txtpath + "Gates/And.png"), 3);
+	if (!Music.openFromFile(mscpath + "Menu.ogg"))
 	{
 		MessageBox(NULL, "Music not found", "Error", NULL);
 		return 0;
 	}
 
-	if (!Font.loadFromFile(fontpath + "comic.ttf"))
+	if (!Font.loadFromFile(fntpath + "comic.ttf"))
 	{
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
@@ -66,10 +65,6 @@ int main(int argc, char **argv)
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 			{
 			}
-
-			// BEGIN UPDATE SECTION
-
-			// END OF UPDATE SECTION
 			
 			map.Update();
 			UpdateClock.restart();
@@ -78,43 +73,29 @@ int main(int argc, char **argv)
 		// Events handler section
 		while (window->pollEvent(ev))
 		{
-			if (ev.type == sf::Event::Closed)
-				window->close();
+			if (ev.type == sf::Event::Closed)				window->close();
 
-			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Escape)
-			{
-				window->close();
-			}
-			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Down)
-			{
-				map.BitDown();
-			}
-			else if (ev.type == sf::Event::KeyPressed && ev.key.code == sf::Keyboard::Up)
-			{
-				map.BitUp();
-			}
+			else if (ev.type == sf::Event::KeyPressed 
+				&& ev.key.code == sf::Keyboard::Escape)		window->close();
+
+			else if (ev.type == sf::Event::KeyPressed
+				&& (ev.key.code == sf::Keyboard::Down
+				||ev.key.code == sf::Keyboard::S))			map.BitDown();
+			
+			else if (ev.type == sf::Event::KeyPressed 
+				&& (ev.key.code == sf::Keyboard::Up
+				|| ev.key.code == sf::Keyboard::W))			map.BitUp();
 		}
 
 		// Drawing section
 		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
 		{
-			//
-			// Drawing objects here
-			//
-
-			frames++;
-			window->clear();
-			points.Draw();
+			window->clear(sf::Color::Blue);
+			//points.Draw();
 			map.Draw();
 			window->display();
 			RenderClock.restart();
-		}
 
-		if (fpsCounter.getElapsedTime().asSeconds() > 1.0f)
-		{
-			std::cout << frames << std::endl;
-			frames = 0;
-			fpsCounter.restart();
 		}
 		sf::sleep(sf::milliseconds(2));
 	}

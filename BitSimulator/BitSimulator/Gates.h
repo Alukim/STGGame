@@ -64,7 +64,6 @@ inline bool NORGate<inputs>::Propagate()
 typedef NORGate<2> NOR2;
 typedef NORGate<3> NOR3;
 typedef NORGate<4> NOR4;
-typedef NORGate<8> NOR8;
 
 
 
@@ -92,7 +91,6 @@ inline bool NANDGate<inputs>::Propagate()
 typedef NANDGate<2> NAND2;
 typedef NANDGate<3> NAND3;
 typedef NANDGate<4> NAND4;
-typedef NANDGate<8> NAND8;
 
 
 
@@ -124,7 +122,6 @@ inline bool XORGate<inputs>::Propagate()
 typedef XORGate<2> XOR2;
 typedef XORGate<3> XOR3;
 typedef XORGate<4> XOR4;
-typedef XORGate<8> XOR8;
 
 
 
@@ -143,7 +140,6 @@ public:
 typedef ORGate<2> OR2;
 typedef ORGate<3> OR3;
 typedef ORGate<4> OR4;
-typedef ORGate<8> OR8;
 
 
 template<int inputs>
@@ -174,7 +170,6 @@ public:
 typedef ANDGate<2> AND2;
 typedef ANDGate<3> AND3;
 typedef ANDGate<4> AND4;
-typedef ANDGate<8> AND8;
 
 
 
@@ -233,8 +228,6 @@ public :
 	bool Propagate();
 };
 
-typedef Multiplexer<4> Multiplexer16;
-typedef Multiplexer<3> Multiplexer8;
 typedef Multiplexer<2> Multiplexer4;
 typedef Multiplexer<1> Multiplexer2;
 
