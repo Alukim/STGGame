@@ -1,11 +1,12 @@
 #pragma once
 #include <SFML\Graphics.hpp>
-
+#include <stdlib.h>
 
 // class used for drawing meters filled with spectrum's colors
 class Battery
 {
 	sf::RenderWindow *ref;	//> pointer to window battery will be drawn in
+	int diff;				//> var that indicates the difference between the actual buffer and drawn buffer
 
 	int load;				//> battery's load
 	int cap;				//> battery's capacity
@@ -13,12 +14,11 @@ class Battery
 	int prevheight;			//> counter to determine the diff in colouring procces
 	bool change;			//> defines if sprite needs to be updated before drawing
 
+	sf::Image batimg;		//> variable where battery's texture is updated
+	sf::Texture battxt;		//> battery's texture
 	sf::Sprite batsprite;	//>	battery's sprite
-	sf::Sprite lightsprite; //> lightning's sprite
-
-	sf::Image batimg;		//> variable where batimg updates take place
-	sf::Image lightimg;		//> variable where lightning updates take place
-
+	
+	
 	void Refactor();		//> update method
 
 public:
@@ -37,7 +37,6 @@ public:
 	//> Sets object coords to /a xpos and /a ypos;
 	Battery(sf::RenderWindow *window, int l, int c, std::string path, int xpos=0, int ypos=0);
 
-
 	
 	//> Adds the /a load_inc to load value
 	void Load(int load_inc);
@@ -49,23 +48,28 @@ public:
 	void Draw();
 };
 
-class Points_class
+class Score
 {
-	int points;
-	sf::Font * font;
-	sf::RenderWindow * ref;
-	sf::Text  text;
-	std::string s;
-	bool change;
-	sf::Vector2f set_position();
+private:
+	bool render;
+
+	int q_points;
+
+	sf::RenderWindow *window;
+
+	sf::Font *font;
+
+	sf::Text t_score;
+
+	sf::Text t_points;
 
 public:
-
-	Points_class(sf::RenderWindow * window, sf::Font * font_);
-	void Update(int inc);
+	Score(sf::RenderWindow *window_context, sf::Font *font);
+	void Add(int inc);
 	void Draw();
-};
 
+
+};
 class ParticleSystem : public sf::Drawable, public sf::Transformable
 {
 private:

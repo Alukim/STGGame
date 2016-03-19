@@ -5,34 +5,22 @@
 
 Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int xpos, int ypos)
 {
-	prevheight = 1000;
 	change = true;
 	waver = 0;
 	ref = window;
 	load = l;
 	cap = c;
+	diff = 0;
 
 	batimg.loadFromFile(path);
-	batimg.createMaskFromColor(sf::Color(200, 200, 200));
+	batimg.createMaskFromColor(sf::Color(255, 0, 255));
+	prevheight = batimg.getSize().y;
 
-	sf::Texture * battxt = new sf::Texture;
-	battxt->loadFromImage(batimg);
-
-	batsprite.setTexture(*battxt);
+	battxt.loadFromImage(batimg);
+	battxt.setSmooth(true);
+	
+	batsprite.setTexture(battxt);
 	batsprite.setPosition(sf::Vector2f(xpos, ypos));
-
-	lightimg.loadFromFile("Resource/Textures/Baterry/piorun2.png");
-	lightimg.createMaskFromColor(sf::Color(255, 0, 255));
-
-	sf::Texture *lighttxt = new sf::Texture;
-	lighttxt->loadFromImage(lightimg);
-	lightsprite.setTexture(*lighttxt);
-
-	sf::FloatRect temp = batsprite.getGlobalBounds();
-	lightsprite.setPosition(sf::Vector2f(xpos, ypos));
-
-	batsprite.setScale(sf::Vector2f(0.5f, 0.5f));
-	lightsprite.setScale(sf::Vector2f(0.5f, 0.5f));
 
 	Refactor();
 }
@@ -41,6 +29,7 @@ Battery::Battery(sf::RenderWindow * window, int l, int c, std::string path, int 
 
 void Battery::Refactor()
 {
+	static sf::Color prev_col = sf::Color::Black;
 	sf::Vector2u dim = batimg.getSize(); // dimensions of image
 
 	sf::Color prob; // keeps tempoporary colour of pixel
@@ -50,172 +39,83 @@ void Battery::Refactor()
 
 	sf::Color fill;	// colour which the battery will be filled with
 
-
-					// estimating fill colour
-	if (res < 0.3f)		fill = sf::Color::Red;
+	// estimating fill colour
+	if (res < 0.3f)			fill = sf::Color::Red;
 	else if (res < 0.6f)	fill = sf::Color(255, 165, 0);
 	else if (res < 0.8f)	fill = sf::Color::Yellow;
 	else					fill = sf::Color::Green;
 
-
-	// height the coulouring begin with
+	// height the coulouring begin with (downwards)
 	int href = (int)((1 - res) * dim.y);
 
-	// colouring loop
-	for (int posx = 0; posx < dim.x; posx++)
-	{
-		for (int posy = 0; posy < dim.y; posy++)
-		{
-			prob = batimg.getPixel(posx, posy);
+	// colouring loops
+	if (href != prevheight) {
+		if (href > prevheight) {
+			for (int posx = 0; posx < dim.x; posx++) {
 
-			if (posy < href) // colours the transparent section of battery
-			{
-
-				if (prob != sf::Color(254, 0, 0) && prob != sf::Color::Black && prob != sf::Color(200, 200, 200, 0))
-					batimg.setPixel(posx, posy, sf::Color::Transparent);
-			}
-			else // colours fill section of battery
-			{
-
-				if (prob != sf::Color(254, 0, 0) && prob != sf::Color::Black && prob != sf::Color(200, 200, 200, 0))
-					batimg.setPixel(posx, posy, fill);
+				// gets pixel from (posx, posy) position and colours it to the transparent one
+				for (int posy = prevheight; posy < href; posy++) {
+					prob = batimg.getPixel(posx, posy);
+					if (prob != sf::Color::Black && prob != sf::Color(210, 154, 46))
+						batimg.setPixel(posx, posy, sf::Color::Transparent);
+				}
 			}
 		}
-	}
-	sf::Texture * _ptr = new sf::Texture;
-	_ptr->loadFromImage(batimg);
+		else {
+			int end;
+			// if colour has changed, whole colour section needs to be redrawn
+			if (prev_col != fill) end = dim.y;
+			else	end = prevheight;
 
-	batsprite.setTexture(*_ptr);
+			for (int posx = 0; posx < dim.x; posx++) {
+				// gets pixel from (posx, posy) position and colours it to the fill colour one
+				for (int posy = href; posy < end; posy++) {
+					prob = batimg.getPixel(posx, posy);
+					if (prob != sf::Color::Black && prob != sf::Color(210, 154,46))
+						batimg.setPixel(posx, posy, fill);
+				}
+			}
+		}
+		// updates the texture, battery ready to be drawn
+		prevheight = href;
+		battxt.update(batimg);
+	}
 }
 
 void Battery::Load(int load_inc)
 {
-	
+	diff += load_inc;
+
 	if (load < cap && (load + load_inc) >= cap)
-	{
 		load = cap;
-		Refactor();
-		change = true;
-	}
-	else if(load + load_inc < cap)
-	{
+
+	else if (load + load_inc < cap)
 		load += load_inc;
+
+	if (diff > 15) {
 		Refactor();
-		change = true;
-	}	
+		diff = 0;
+	}
 }
 
 void Battery::Dissipate(int load_dnc)
 {
-	change = true;
-
+	diff -= load_dnc;
 	if (load > 0 && (load - load_dnc) < 0)
-	{
-		load -= load_dnc;
 		load = 0;
-		Refactor();
-	}
-	else if (load == 0)
-	{
-		change = false;
-	}
-	else
-	{
+
+	else if (load - load_dnc > 0)
 		load -= load_dnc;
+
+	if (diff < -15) {
 		Refactor();
+		diff = 0;
 	}
 }
 
 void Battery::Draw()
 {
-
-	if (waver == 31) waver = 0;
-	if (waver == 0 || waver == 16)	change = true;
-	if (change)
-	{
-		sf::Vector2u dim = batimg.getSize();
-		if (load == cap)
-		{
-			if (waver < 15)
-			{
-				ChangeColor(&batimg, sf::Color::Black, sf::Color(254, 0, 0));
-				ChangeColor(&lightimg, sf::Color::Black, sf::Color(254, 0, 0));
-			}
-
-			else if (waver < 30)
-			{
-				ChangeColor(&batimg, sf::Color(254, 0, 0), sf::Color::Black);
-				ChangeColor(&lightimg, sf::Color(254, 0, 0), sf::Color::Black);
-			}
-
-		}
-		else
-		{
-			ChangeColor(&batimg, sf::Color(254, 0, 0), sf::Color::Black);
-			ChangeColor(&lightimg, sf::Color(254, 0, 0), sf::Color::Black);
-		}
-
-		sf::Texture *batptr = new sf::Texture;
-		batptr->loadFromImage(batimg);
-		batptr->setSmooth(true);
-		batsprite.setTexture(*batptr);
-
-		sf::Texture *lightptr = new sf::Texture;
-		lightptr->loadFromImage(lightimg);
-		lightptr->setSmooth(true);
-		lightsprite.setTexture(*lightptr);
-	}
-	waver++;
 	ref->draw(batsprite);
-	ref->draw(lightsprite);
-	change = false;
-}
-
-sf::Vector2f Points_class::set_position()
-{
-	int pos_x, pos_y;
-
-	sf::Vector2u curr_mode = ref->getSize();
-	int screen_x = curr_mode.x;
-	int screen_y = curr_mode.y;
-
-	int x = (15 * text.getCharacterSize()) / 25;
-
-	pos_x = screen_x - (7 * x /*Points:*/ + 7 * x /*ilosc pkt*/);
-	pos_y = screen_y / 100;
-
-
-	return sf::Vector2f(pos_x, pos_y);
-}
-
-Points_class::Points_class(sf::RenderWindow * window, sf::Font * font_)
-{
-	this->ref = window;
-	this->points = 0;
-	this->change = true;
-	font = font_;
-
-	text.setFont(*font);
-	text.setPosition(set_position());
-	text.setColor(sf::Color(255, 0, 0));
-}
-
-void Points_class::Update(int inc)
-{
-	points += inc;
-	change = true;
-}
-
-void Points_class::Draw()
-{
-
-	if (change)
-	{
-		s = "Points: " + std::to_string(points);
-		text.setString(s);
-	}
-	ref->draw(text);
-	change = false;
 }
 
 ParticleSystem::ParticleSystem(unsigned int count) :
@@ -258,4 +158,35 @@ void ParticleSystem::draw(sf::RenderTarget & target, sf::RenderStates states) co
 
 	// draw the vertex array
 	target.draw(m_vertices, states);
+}
+
+Score::Score(sf::RenderWindow * window_context, sf::Font * font): 
+	t_score(sf::Text("Score:", *font, 50)), 
+	t_points(sf::Text("999999", *font, 50))
+{
+	window = window_context;
+	this->font = font;
+
+	sf::FloatRect temp1 = t_points.getGlobalBounds();
+	t_points.setOrigin(sf::Vector2f(temp1.left + temp1.width+10, 0));
+	Vector2u w_size = window_context->getSize();
+	t_points.setPosition(sf::Vector2f(w_size.x-20, 0));
+
+	sf::FloatRect temp2 = t_score.getGlobalBounds();
+	t_score.setOrigin(sf::Vector2f(temp2.left + temp2.width + 10, 0));
+	t_score.setPosition(sf::Vector2f(w_size.x - temp1.width - 30, 0));
+	t_points.setString("0");
+	
+}
+
+void Score::Add(int inc)
+{
+	q_points += inc;
+	t_points.setString(std::to_string(q_points));
+}
+
+void Score::Draw()
+{
+	window->draw(t_score);
+	window->draw(t_points);
 }

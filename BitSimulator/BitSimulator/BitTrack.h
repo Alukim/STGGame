@@ -30,25 +30,30 @@ class Tracklist;
 class Track
 {
 private:
-	int width;							//> width of track
+	
 	sf::RenderWindow *window;			//> pointer to window the track will be drawn in
 	sf::Sprite sprite;					//> sprite of track
 	std::list <GameObject *> draw_list;	//> list of elements placed on track
 	GameObject *bitptr;					//> pointer to bit on track, if there is not any, pointer is null
-	sf::Vector2i offset;				//> offset of the track
 	
+	float length;						//> length of track
+	float h_offset;						//> height offset of the track
+	
+	static sf::Texture texture;
 public:
 	friend Tracklist;
 
+	
 
 	//> construcor
-	Track(sf::RenderWindow *win, std::string path, int x, int y);
+	Track(sf::RenderWindow *win, float y);
 
 
 	//> Attaches a bit to the track
 	//> /a ptr - pointer to bit object
 	void Attach(GameObject *ptr);
 
+	static void SetTexture(std::string &path);
 
 	//> Detaches a bit from the track
 	//> Returns pointer to detached bit
@@ -83,7 +88,7 @@ private:
 	bool bitstate;
 
 	GameObject *bit;		//> pointer to bit
-	Track **list;			//> list of tracks
+	Track *list[5];			//> list of tracks
 
 	Battery *volts;			//> volt load
 	Battery *amps;			//> amper load
@@ -93,6 +98,7 @@ public:
 	Tracklist(sf::RenderWindow * window);
 	void AddTrack(Track *track, int pos);
 	void AddElem(GameObject *new_elem, int track);
+	void ChangeBitState();
 	void Update();
 	void BitUp();
 	void BitDown();

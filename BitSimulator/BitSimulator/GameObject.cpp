@@ -81,7 +81,7 @@ GameObject::GameObject(RenderWindow *win, Texture *text, int x, int y, bool adju
 	shape.setPosition(Vector2f(rect.left, rect.top));
 }
 
-GameObject::GameObject(RenderWindow *win, std::string path,  sf::Color transmask, unsigned int x, unsigned int y)
+GameObject::GameObject(RenderWindow *win, std::string &path,  sf::Color transmask, unsigned int x, unsigned int y)
 {
 	sf::Image img;
 	sf::Texture *temp = new sf::Texture;

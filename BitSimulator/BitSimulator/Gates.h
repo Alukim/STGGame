@@ -16,7 +16,7 @@ public:
 
 	//> Default constructor
 	//> initializes inputs number
-	LogicElem(sf::RenderWindow *winref, std::string path) : GameObject(winref, path, sf::Color(200, 200, 200)), inputs_count(inputs)
+	LogicElem(sf::RenderWindow *winref, std::string path) : GameObject(winref, path, sf::Color(255, 0, 255)), inputs_count(inputs)
 	{
 	}
 

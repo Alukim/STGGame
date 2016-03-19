@@ -11,34 +11,30 @@
 
 int main(int argc, char **argv)
 {
-	const int fps = 1000 / 200;
-	const int ups = 1000 / 100;
+	const sf::Int32 fps = 1000 / 200;
+	const sf::Int32 ups = 1000 / 200;
 
-	sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(1200, 800, 32), "BitSimulator", sf::Style::Default);
-	
-	window->setVerticalSyncEnabled(true);
+	sf::RenderWindow &window = sf::RenderWindow(sf::VideoMode(1200, 800, 32), "BitSimulator", sf::Style::Default);
 
 	sf::Clock RenderClock;
 	sf::Clock UpdateClock;
-	sf::Clock fpsCounter;
-	fpsCounter.restart();
-	int frames = 0;
 
 	sf::Event ev;
 	sf::Font Font;
 	sf::Music Music;
-	
-	Tracklist map(window);
 
-	map.AddElem(new Volt(window, txtpath + "gwiazda.png", 400), 0);
-	map.AddElem(new AND2(window, txtpath + "Gates/And.png"), 3);
-	if (!Music.openFromFile(mscpath + "Menu.ogg"))
+	Tracklist map(&window);
+
+	map.AddElem(new Volt(&window, txtpath + "gwiazda.png", 500), 0);
+	map.AddElem(new AND2(&window, txtpath + "Gates/And.png"), 3);
+
+	if (!Music.openFromFile(mscpath + "Menu.ogg")) 
 	{
 		MessageBox(NULL, "Music not found", "Error", NULL);
 		return 0;
 	}
 
-	if (!Font.loadFromFile(fntpath + "comic.ttf"))
+	if (!Font.loadFromFile(fntpath + "bellfort.otf"))
 	{
 		MessageBox(NULL, "Font not found", "Error", NULL);
 		return 0;
@@ -49,15 +45,14 @@ int main(int argc, char **argv)
 	Music.play();
 	Music.stop();
 
-	Points_class points(window, &Font);
-	while (window->isOpen())
-	{
+	Score pts(&window, &Font);
+	while (window.isOpen()) {
 		// Update section
 		if (UpdateClock.getElapsedTime().asMilliseconds() > ups)
 		{
-			
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
+				pts.Add(1000);
 			}
 			else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 			{
@@ -65,37 +60,39 @@ int main(int argc, char **argv)
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 			{
 			}
-			
+
 			map.Update();
 			UpdateClock.restart();
 		}
 
 		// Events handler section
-		while (window->pollEvent(ev))
+		while (window.pollEvent(ev))
 		{
-			if (ev.type == sf::Event::Closed)				window->close();
+			if (ev.type == sf::Event::Closed)				window.close();
 
-			else if (ev.type == sf::Event::KeyPressed 
-				&& ev.key.code == sf::Keyboard::Escape)		window->close();
+			else if (ev.type == sf::Event::KeyPressed
+				&& ev.key.code == sf::Keyboard::Escape)		window.close();
 
 			else if (ev.type == sf::Event::KeyPressed
 				&& (ev.key.code == sf::Keyboard::Down
-				||ev.key.code == sf::Keyboard::S))			map.BitDown();
-			
-			else if (ev.type == sf::Event::KeyPressed 
+					|| ev.key.code == sf::Keyboard::S))		map.BitDown();
+
+			else if (ev.type == sf::Event::KeyPressed
 				&& (ev.key.code == sf::Keyboard::Up
-				|| ev.key.code == sf::Keyboard::W))			map.BitUp();
+					|| ev.key.code == sf::Keyboard::W))		map.BitUp();
+
+			else if (ev.type == sf::Event::KeyPressed
+				&& ev.key.code == sf::Keyboard::Space)		map.ChangeBitState();
 		}
 
 		// Drawing section
-		if (RenderClock.getElapsedTime().asMilliseconds() > fps)
+		if (RenderClock.getElapsedTime().asMilliseconds() >= fps)
 		{
-			window->clear(sf::Color::Blue);
-			//points.Draw();
+			window.clear(sf::Color::Green);
 			map.Draw();
-			window->display();
+			pts.Draw();
+			window.display();
 			RenderClock.restart();
-
 		}
 		sf::sleep(sf::milliseconds(2));
 	}

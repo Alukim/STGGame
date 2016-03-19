@@ -33,14 +33,12 @@ inline void Bonus<letter>::Draw()
 	if (scale.x < 0.2f)		mod = false;
 	else if (scale.x >= 1.0f) mod = true;
 
-	if (mod)
-	{
-		scale.x -= 0.01f; 
+	if (mod) {
+		scale.x -= 0.01f;
 		scale.y -= 0.01f;
 	}
-	else
-	{
-		scale.x += 0.01f; 
+	else {
+		scale.x += 0.01f;
 		scale.y += 0.01f;
 	}
 	shape.setScale(sf::Vector2f(scale.x, scale.y));
