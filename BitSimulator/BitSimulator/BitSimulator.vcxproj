@@ -125,6 +125,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +137,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="List.h" />
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
@@ -146,12 +149,14 @@
     <Image Include="Resource\Textures\track.png" />
   </ItemGroup>
   <ItemGroup>
+    <Font Include="Resource\Fonts\bellfort.otf" />
     <Font Include="Resource\Fonts\comic.ttf" />
     <Font Include="Resource\Fonts\comicbd.ttf" />
     <Font Include="Resource\Fonts\comici.ttf" />
     <Font Include="Resource\Fonts\comicz.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Resource\Music\Menu.ogg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

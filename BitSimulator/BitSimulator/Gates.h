@@ -6,7 +6,6 @@
 
 
 // ====================================================== LOGIC ELEM BASE CLASS =====================================================
-template <int inputs>
 class LogicElem : public GameObject
 {
 protected:
@@ -16,20 +15,18 @@ public:
 
 	//> Default constructor
 	//> initializes inputs number
-	LogicElem(sf::RenderWindow *winref, std::string path) : GameObject(winref, path, sf::Color(255, 0, 255)), inputs_count(inputs)
+	LogicElem(sf::RenderWindow *winref, std::string path, int q_inputs) : GameObject(winref, path, sf::Color(255, 0, 255)), inputs_count(q_inputs)
 	{
+		_input = new bool[inputs_count];
 	}
 
 	//> Pure virtual function used to simulate gate work
 	virtual bool Propagate() = 0;
 
-
-	//> Changes input digit on given track
-	//> /a index_in	- index of track
-	//> /a digit - digit value to be replaced
-	void SetCustomInput(int index_in, bool digit);
-	void Burn();
-	void Update();
+	virtual ~LogicElem()
+	{
+		delete _input;
+	}
 
 };
 
@@ -37,14 +34,11 @@ public:
 
 // ======================================================== NOR GATE CLASS ========================================================
 template <int inputs>
-class NORGate : public LogicElem<inputs>
+class NORGate : public LogicElem
 {
-	
 public:
-	NORGate<inputs>(sf::RenderWindow * window, std::string path) : GameObject(window, path)
+	NORGate<inputs>(sf::RenderWindow * window, std::string path) : LogicElem(window, path, inputs)
 	{
-		inputs_count = inputs;
-		_input = new bool[inputs_count];
 	}
 	bool Propagate() override;
 };
@@ -54,7 +48,6 @@ inline bool NORGate<inputs>::Propagate()
 	for (int i = 0; i < inputs_count; i++)
 	{
 		if (_input[i]) { std::cout << "Propagation on gate: FALSE"; return false; }
-
 	}
 	std::cout << "Propagation on gate: TRUE";
 	return true;
@@ -63,7 +56,6 @@ inline bool NORGate<inputs>::Propagate()
 
 typedef NORGate<2> NOR2;
 typedef NORGate<3> NOR3;
-typedef NORGate<4> NOR4;
 
 
 
@@ -71,9 +63,13 @@ typedef NORGate<4> NOR4;
 
 // ======================================================== NAND GATE CLASS ========================================================
 template <int inputs>
-class NANDGate : public LogicElem<inputs>
+class NANDGate : public LogicElem
 {
 public:
+	NANDGate<inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, inputs)
+	{
+	}
+
 	bool Propagate() override;
 };
 
@@ -90,16 +86,17 @@ inline bool NANDGate<inputs>::Propagate()
 }
 typedef NANDGate<2> NAND2;
 typedef NANDGate<3> NAND3;
-typedef NANDGate<4> NAND4;
-
-
 
 
 // ================================================== XOR GATE CLASS ===========================================================
 template <int inputs>
-class XORGate : public LogicElem<inputs>
+class XORGate : public LogicElem
 {
 public:
+	XORGate<inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, inputs)
+	{
+	}
+
 	bool Propagate() override;
 };
 
@@ -121,7 +118,6 @@ inline bool XORGate<inputs>::Propagate()
 
 typedef XORGate<2> XOR2;
 typedef XORGate<3> XOR3;
-typedef XORGate<4> XOR4;
 
 
 
@@ -131,15 +127,18 @@ typedef XORGate<4> XOR4;
 
 // ===================================================== OR GATE CLASS =============================================================
 template <int inputs>
-class ORGate : public LogicElem<inputs>
+class ORGate : public LogicElem
 {
 public:
+	ORGate<inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, inputs)
+	{
+	}
+
 	bool Propagate() override;
 };
 
 typedef ORGate<2> OR2;
 typedef ORGate<3> OR3;
-typedef ORGate<4> OR4;
 
 
 template<int inputs>
@@ -156,10 +155,10 @@ inline bool ORGate<inputs>::Propagate()
 
 // ================================================== AND GATE CLASS ============================================================
 template <int inputs>
-class ANDGate : public LogicElem<inputs>
+class ANDGate : public LogicElem
 {
 public:
-	ANDGate<inputs>(sf::RenderWindow *win, std::string path) : LogicElem(win, path)
+	ANDGate<inputs>(sf::RenderWindow *win, std::string path) : LogicElem(win, path,2)
 	{
 	}
 
@@ -169,7 +168,6 @@ public:
 
 typedef ANDGate<2> AND2;
 typedef ANDGate<3> AND3;
-typedef ANDGate<4> AND4;
 
 
 
@@ -185,38 +183,17 @@ inline bool ANDGate<inputs>::Propagate()
 
 
 // ===================================================== LOGIC ELEM CLASS ===========================================================
-template<int inputs>
-inline void LogicElem<inputs>::SetCustomInput(int index_in, bool digit)
-{
-	if (index_in > inputs)
-		throw "Out of scope";
-	else
-		_input[index_in] = digit;
-}
 
-
-template<int inputs>
-inline void LogicElem<inputs>::Burn()
-{
-	// runs animation of overheating gate
-}
-
-template<int inputs>
-inline void LogicElem<inputs>::Update()
-{
-	// updates logic
-}
 
 template <int address_inputs>
-class Multiplexer : public LogicElem<address_inputs>
+class Multiplexer : public LogicElem
 {
 	bool strob;
 	bool *add_input;
 
 public : 
-	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path)
+	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, (int)std::pow(2, address_inputs))
 	{
-		inputs_count = (int)pow(2, address_inputs);
 		_input = new bool[inputs_count];
 		for (int i = 0; i < inputs_count; i++)
 			_input[i] = false;
@@ -245,25 +222,26 @@ inline bool Multiplexer<address_inputs>::Propagate()
 		}
 	}
 
-	if (_input[i])
+	if (_input[address])
 		return true;
 	
 	else return false;
 }
 // -------------------------------------------Flip-Flop D Class------------------------------------
 template <int input>
-class FlipD : public LogicElem<input>
+class FlipD : public LogicElem
 {
 private:
 	bool output;
 public:
-	bool Propagate() override; //_input[0] == D;
-	FlipD();
+	bool Propagate() override;
+	FlipD(sf::RenderWindow *window, std::string path);
 	~FlipD();
 };
 
+
 template<int input>
-inline FlipD<input>::FlipD() : LogicElem<2>
+inline FlipD<input>::FlipD(sf::RenderWindow *window, std::string path) : LogicElem(window, path, 2)
 {
 }
 
@@ -271,73 +249,68 @@ template<int input>
 inline bool FlipD<input>::Propagate()
 {
 		if (_input[1])
-		{
-			_input[0] == output ? return true : return false;
-		}
-		else
-		{
-			//End Game 
-			return false;
-		}
+			return _input[0] == output;
+		
+		else return false; //End Game
 }
+
+
 
 // -------------------------------------------Flip-Flop JK Class------------------------------------
 
 template <int input>
-class FlipJK : public LogicElem<input>
+class FlipJK : public LogicElem
 {
 private:
 	bool output;
 public:
 	bool Propagate() override; // _input[0] == J && _input[2] == K
-	FlipJK();
+	FlipJK(sf::RenderWindow *window, std::string path);
 	~FlipJK();
 };
 
 template<int input>
-inline FlipJK<input>::FlipJK() : LogicElem<3>
-{}
+inline FlipJK<input>::FlipJK(sf::RenderWindow *window, std::string path) : LogicElem(window, path, 3)
+{
+}
+
+template<int input>
+inline FlipJK<input>::~FlipJK()
+{
+}
 
 template<int input>
 inline bool FlipJK<input>::Propagate() 
 {
 	bool temp = false;
-	if (_input[0] && _input[2])
-	{
-		temp = !output;
-	}
-	else if ((!output && _input[0]) || (output && _input[2] == false))
-	{
-		temp = true;
-	}
-
 	if (_input[1])
 	{
-		temp == output ? return true : return false;
+		if (!_input[0] && !_input[2])
+			temp = output;
+		else if ((!_input[0] && _input[2]) || (_input[0] && !_input[2]))
+			temp = _input[0];
+
+		else if (_input[0] && _input[2])
+			temp = !output;
+
+		return temp == output;
 	}
-	else
-	{
-		//End Game 
-		return false;
-	}
+	else return false;
 }
 
 // -------------------------------------------Flip-Flop T Class------------------------------------
 
 template<int input>
-class FlipT : public LogicElem<input>
+class FlipT : public LogicElem
 {
 private:
 	bool output;
 public:
 	bool Propagate() override; //_input[0] == T;
-	FlipT();
+	FlipT(sf::RenderWindow *window, std::string path);
 	~FlipT();
 };
 
-template<int input>
-inline FlipT<input>::FlipT() : LogicElem<2>
-{}
 
 template<int input>
 inline bool FlipT<input>::Propagate()
@@ -360,4 +333,9 @@ inline bool FlipT<input>::Propagate()
 		//End Game 
 		return false;
 	}
+}
+
+template<int input>
+inline FlipT<input>::FlipT(sf::RenderWindow * window, std::string path) : LogicElem(window, path, 2)
+{
 }

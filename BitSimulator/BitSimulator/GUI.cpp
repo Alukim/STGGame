@@ -43,7 +43,7 @@ void Battery::Refactor()
 	if (res < 0.3f)			fill = sf::Color::Red;
 	else if (res < 0.6f)	fill = sf::Color(255, 165, 0);
 	else if (res < 0.8f)	fill = sf::Color::Yellow;
-	else					fill = sf::Color::Green;
+	else					fill = sf::Color::Blue;
 
 	// height the coulouring begin with (downwards)
 	int href = (int)((1 - res) * dim.y);
@@ -98,7 +98,7 @@ void Battery::Load(int load_inc)
 	}
 }
 
-void Battery::Dissipate(int load_dnc)
+int Battery::Dissipate(int load_dnc)
 {
 	diff -= load_dnc;
 	if (load > 0 && (load - load_dnc) < 0)
@@ -107,10 +107,12 @@ void Battery::Dissipate(int load_dnc)
 	else if (load - load_dnc > 0)
 		load -= load_dnc;
 
-	if (diff < -15) {
+	if (diff < -15)
+	{
 		Refactor();
 		diff = 0;
 	}
+	return load;
 }
 
 void Battery::Draw()

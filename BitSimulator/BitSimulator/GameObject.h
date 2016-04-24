@@ -7,9 +7,9 @@ class GameObject
 {
 protected:
 	sf::RenderWindow *window; //> pointer to a window object is asigned
-	sf::IntRect rect; //> rectangle of texture layout
-	sf::RectangleShape shape; //> representation of the object
+	
 public:
+	sf::Sprite sprite; //> representation of the object
 	//> default constructor
 	GameObject() {}
 
@@ -25,12 +25,7 @@ public:
 
 
 	//> sets position and modifies intmask of object
-	void SetPosition(int x, int y);
-
-
-	//> resizes the object to given /a width and /a height
-	void Resize(unsigned int width, unsigned int height);
-
+	void SetPosition(float x, float y);
 
 	//> scales the object dimensions by
 	//> /a prct_x in width 
@@ -41,7 +36,7 @@ public:
 	//> moves an object by
 	//> /a x in x-axis
 	//> /a y in y-axis
-	virtual void Move(int x, int y);
+	virtual void Move(float, float y);
 
 
 	//> sets an origin of sprite
@@ -50,9 +45,10 @@ public:
 	void SetOrigin(float x, float y);
 
 
-	//> returns current dimensions of an object
-	IntRect GetLayout() const;
+	void setColor(const sf::Color &colour);
 
+	//> returns current dimensions of an object
+	FloatRect &GetLayout();
 
 	void operator = (GameObject &ref);
 
@@ -61,6 +57,7 @@ public:
 	virtual void Draw();
 
 
+	virtual operator sf::Sprite() const;
 	virtual ~GameObject();
 };
 

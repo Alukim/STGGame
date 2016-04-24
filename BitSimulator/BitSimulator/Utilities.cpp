@@ -10,10 +10,15 @@ bool Intersect(FloatRect &elem1, Vector2i &elem2)
 		return false;
 }
 
-bool Intersect(IntRect &elem1, IntRect &elem2)
+bool Intersect(FloatRect &elem1, FloatRect &elem2)
 {
-	return elem1.intersects(elem2);
+	if ((elem1.left + elem1.width >= elem2.left) && (elem1.left < elem2.left + elem2.width) 
+		&& (elem1.top + elem1.height >= elem2.top) && (elem1.top < elem2.top + elem2.height))
+		return true;
+	
+	else return false;
 }
+
 void ChangeColor(sf::Image * ptr, sf::Color col1, sf::Color col2)
 {
 	Vector2u dim = ptr->getSize();
@@ -26,4 +31,40 @@ void ChangeColor(sf::Image * ptr, sf::Color col1, sf::Color col2)
 				ptr->setPixel(posx, posy, col2);
 		}
 	}
+}
+
+double CoverBonus(sf::FloatRect elem1, sf::FloatRect elem2)
+{
+	if (elem1.left > elem2.left && elem1.left + elem1.width < elem2.left + elem2.width)
+		return 1.0f;
+	else
+	{	
+		double temp = elem2.left - elem1.left;
+		temp = elem1.width - temp;
+		temp /= elem2.width;
+		return temp;
+	}
+}
+
+double CoverPercentage(sf::FloatRect elem1, sf::FloatRect elem2)
+{
+		int area = elem1.width * elem1.height;
+
+		int diff_x = elem1.left - elem2.left;
+
+		if (diff_x < 0)
+			diff_x = elem1.width + diff_x;
+
+		else
+			diff_x = elem2.width - diff_x;
+
+		int diff_y = elem1.top - elem2.top;
+
+		if (diff_y < 0)
+			diff_y = elem1.height + diff_y;
+		else
+			diff_y = elem2.height - diff_y;
+		
+		double l = (double)(diff_x * diff_y) / area;
+		return l;
 }

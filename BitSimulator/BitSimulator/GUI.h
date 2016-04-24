@@ -42,7 +42,7 @@ public:
 	void Load(int load_inc);
 		
 	//> decrements load value by /a load_dnc
-	void Dissipate(int load_dnc);
+	int Dissipate(int load_dnc);
 		
 	//> Draws the sprite onto screen
 	void Draw();

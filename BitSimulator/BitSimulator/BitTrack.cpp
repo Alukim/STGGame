@@ -7,73 +7,90 @@ Track::Track(sf::RenderWindow *win,  float y)
 {
 	window = win;		// sets window pointer
 	bitptr = NULL;		// sets bit pointer to null (no bit set on track)
-	
+	events = None;
+
 	sf::Vector2u size = window->getSize();
+	Timer.restart();
 
 	h_offset = y;	// height which track begin with
+	length = size.x;
 	sprite.setTexture(texture);
 	sprite.setTextureRect(sf::IntRect(0, 0, size.x, texture.getSize().y));
 	sprite.setPosition(sf::Vector2f(0, h_offset));
 }
 
-void Track::Attach(GameObject * ptr)
+void Track::Attach(Bit * ptr)
 {
 	bitptr = ptr;
 	sf::FloatRect pos = sprite.getGlobalBounds();
-
-	bitptr->SetPosition((int)(pos.width * 0.03f), (int)pos.top);
+	value = bitptr->GetState();
+	bitptr->SetPosition((pos.width * 0.5F), pos.top + pos.height/2);
 }
 
 void Track::SetTexture(std::string &path)
 {
-	
 	texture.loadFromFile(path);
 	texture.setRepeated(true);
 }
 
-GameObject* Track::Detach()
+void Track::Detach()
 {
-	GameObject *get = bitptr;
 	bitptr = NULL;
-	return get;
+	value = false;
 }
 
-int Track::Update()
+GameObject *Track::Update(float off)
 {
-	std::list<GameObject *>::iterator it = draw_list.begin();
+		sf::FloatRect rect;
+		GameObject *temp = 0;
+		events = TrackEvents::No_Bit;
+		draw_list.remove_if([](GameObject* x) { return (x->GetLayout().left + x->GetLayout().width < 0); });
+		if(Timer.getElapsedTime().asMicroseconds() > Tick)
+		{ 
+			for (auto elem : draw_list)
+			{
+				elem->Move(-off, 0);
+				rect = elem->GetLayout();
 
-	for (it; it != draw_list.end(); it++) 
-	{
-		(*it)->Move(-1, 0);
-	}
+				if (rect.left + rect.width < 0)
+				{
+					draw_list.remove(elem);
+					break;
+				}
+				// checking only if bit is on the track
+				if (bitptr)
+				{
+					bitptr->Update();
+					// checks for interaction of bit and track element
+					events = TrackEvents::None;
+					sf::FloatRect fl = bitptr->GetLayout();
+					if (Intersect(fl, rect))
+					{
+						if (Volt *v = dynamic_cast<Volt *>(elem))
+						{
+							if (v->isVisible())
+								events = TrackEvents::VBonusHit;
+						}
+						else if (dynamic_cast<Amper *>(elem))
+							events = TrackEvents::ABonusHit;
 
-	if (bitptr && draw_list.size() != 0) {
-
-		GameObject *tempptr = *draw_list.begin();
-
-		// checks for interaction of bit and track element
-		if (Intersect(bitptr->GetLayout(), tempptr->GetLayout()))
-		{
-			// first element is volt bonus, returns BonusHit event
-			if (typeid(Volt) == typeid(*tempptr))				return Events::VBonusHit;
-
-			// first element is amper bonus, returns BonusHit event
-			else if (typeid(Amper) == typeid(*tempptr))			return Events::ABonusHit;
-
-			// first element is 2-inputs NAND, returns Elem_Entered event
-			else if (typeid(LogicElem<2>) == typeid(*tempptr)
-				|| typeid(LogicElem<3>) == typeid(*tempptr))	return Events::Elem_Entered;
+						else if (dynamic_cast<LogicElem *>(elem))
+							events = TrackEvents::Elem_Entered;
+						temp = elem;
+					}
+				}
+			}
+			Timer.restart();
 		}
-	}
-	return Events::None;  // no event occured
+		return temp;
 }
 
-void Track::AddElem(GameObject * new_elem)
+void Track::AddElem(GameObject *new_elem)
 {
 
 	sf::FloatRect pos = sprite.getGlobalBounds();
 
-	new_elem->SetPosition(pos.width, (int)pos.top);
+	new_elem->SetPosition(pos.width, pos.top);
 
 	draw_list.push_back(new_elem);
 }
@@ -85,118 +102,124 @@ GameObject * Track::GetElem()
 
 void Track::Draw()
 {
+	if (value)
+		sprite.setColor(sf::Color(0,150,0));
+	else
+		sprite.setColor(sf::Color(150,0,0));
 	window->draw(sprite);
 
-	if (bitptr)		bitptr->Draw();
+	if (bitptr)		
+		bitptr->Draw();
 
-	std::list<GameObject *>::iterator it = draw_list.begin();
-
-	for (it; it != draw_list.end(); it++)	
-		(*it)->Draw();
+	for (auto temp : draw_list)
+	{
+		temp->Draw();
+	}
 
 }
 
-Tracklist::Tracklist(sf::RenderWindow *window)
+Bit::Bit(sf::RenderWindow *& render_target, std::string & path)
+	: GameObject(render_target, path, sf::Color(255,0,255))
 {
-	size = 5;
-	track_num = 0;
-	bitstate = true;
-
-	Track::SetTexture(txtpath + "track.png");
-
-	bit = new GameObject(window, txtpath + "bit.png", sf::Color(255, 0, 255));
-	
-	counter = 0;
-	AddTrack(new Track(window, 200), 0);
-	AddTrack(new Track(window, 285), 1);
-	AddTrack(new Track(window, 370), 2);
-	AddTrack(new Track(window, 455), 3);
-	AddTrack(new Track(window, 540), 4);
-
-	list[0]->Attach(bit);
-
-	volts = new Battery(window, 5000, 10000, txtpath + "Baterry/bat.png");
+	Collecting = false;
+	Entering = false;
+	Leaving = false;
+	State = false;
+	Locked = false;
+	sf::FloatRect rect = sprite.getGlobalBounds();
+	sprite.setOrigin(Vector2f(rect.width / 2, rect.height / 2));
 }
 
-void Tracklist::AddTrack(Track * track, int pos)
+void Bit::ChangeState()
 {
-	list[pos] = track;
+	if (State = !State)
+		setColor(sf::Color::Green);
+	else
+		setColor(sf::Color::Cyan);
 }
 
-void Tracklist::AddElem(GameObject * new_elem, int track)
+void Bit::SetState(bool state)
 {
-	list[track]->AddElem(new_elem);
+	if (State = state)	setColor(sf::Color::Green);
+	else				setColor(sf::Color::Cyan);
 }
 
-void Tracklist::ChangeBitState()
+bool Bit::GetState()
 {
-	bitstate = !bitstate;
+	return State;
 }
 
-void Tracklist::Update()
+void Bit::EnterGate(LogicElem * elem)
 {
-	for (int i = 0; i < size; i++) {
-		if (list[i])
+	if (prop != elem)
+	{
+		prop = elem;
+		Entering = true;
+		Locked = true;
+	}
+}
+
+void Bit::LeaveGate()
+{
+	if (prop)
+	{
+		Leaving = true;
+	}
+}
+
+bool Bit::Propagate()
+{
+	if (Entering)
+	{
+		bool x = prop->Propagate();
+		prop = NULL;
+		Entering = false;
+		return x;
+	}
+}
+
+void Bit::setCollectingState(bool state)
+{
+	Collecting = state;
+}
+
+bool Bit::isCollecting()
+{
+	return Collecting;
+}
+
+bool Bit::isLocked()
+{
+	return Locked;
+}
+
+bool Bit::Update()
+{
+	if (Timer.getElapsedTime().asMilliseconds() > Tick)
+	{
+		sf::Vector2f vec = sprite.getScale();
+		if (Entering && vec.x > 0.1f)
 		{
-
-			switch (list[i]->Update())
+			sprite.setScale(sf::Vector2f(vec.x - 0.045f, vec.y - 0.045f));
+		}
+		else if (Leaving)
+		{
+			
+			sprite.setScale(sf::Vector2f(vec.x + 60.0F / 1000, vec.y + 60.0F / 1000));
+			if (vec.x >= 1)
 			{
-				// loading battery with bonus volt amount
-			case Events::VBonusHit: {
-				int temp = (dynamic_cast<Volt *>(list[i]->GetElem()))->GetBonus();
-				volts->Load(temp);
-				(list[i]->draw_list).pop_front();
-			}
-			break;
-			// loading battery with bonus amper amount
-			case Events::ABonusHit: 
-			{
-				int temp = (dynamic_cast<Amper *>(list[i]->GetElem()))->GetBonus();
-				amps->Load(temp);
-				list[i]->draw_list.pop_front();
-			}
-			break;
-
-			// bit annihilation - gets to nearest checkpoint or ends the run
-			case Events::Bit_Annihillated:
-				break;
-
-			// logic element entered
-			case Events::Elem_Entered:
-				break;
+				Leaving = false;
+				Locked = false;
+				sprite.setScale(sf::Vector2f(1, 1));
 			}
 		}
+		Timer.restart();
 	}
-	//volts->Dissipate(1);
+	return false;
 }
 
-void Tracklist::BitUp()
+void Bit::Draw()
 {
-	if (track_num != 0)
-	{
-		GameObject *temp = list[track_num]->Detach();
-		list[track_num - 1]->Attach(temp);
-		track_num--;
-	}
+	if (sprite.getScale().x > 0.1f)
+		window->draw(sprite);
 }
-
-void Tracklist::BitDown()
-{
-	if (track_num != 4)
-	{
-		GameObject * temp = list[track_num]->Detach();
-		list[track_num + 1]->Attach(temp);
-		track_num++;
-	}
-}
-
-void Tracklist::Draw()
-{
-	for (int i = 0; i < size; i++)
-	{
-		if (list[i])	
-			list[i]->Draw();
-	}
-	volts->Draw();
-}
-

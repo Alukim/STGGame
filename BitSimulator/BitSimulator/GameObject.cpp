@@ -2,50 +2,42 @@
 #include <iostream>
 using namespace sf;
 
-void GameObject::SetPosition(int x, int y)
+void GameObject::SetPosition(float x, float y)
 {
-	rect.left = x;
-	rect.top = y;
-	shape.setPosition(x, y);
-}
-
-void GameObject::Resize(unsigned int width, unsigned int height)
-{
-	rect.width = width;
-	rect.height = height;
+	sprite.setPosition(x, y);
 }
 
 void GameObject::Scale(float prct_x, float prct_y)
 {
-	rect.width *= (prct_x / 100);
-	rect.height *= (prct_y / 100);
-	shape.setSize(sf::Vector2f(rect.width, rect.height));
+	sprite.scale(sf::Vector2f(prct_x, prct_y));
 }
 
 
-void GameObject::Move(int x, int y)
+void GameObject::Move(float x, float y)
 {
-	rect.left += x;
-	rect.top += y;
-	shape.setPosition(sf::Vector2f(rect.left, rect.top));
+	sprite.move(sf::Vector2f(x, y));
 }
 
 void GameObject::SetOrigin(float x, float y)
 {
-	shape.setOrigin(sf::Vector2f(x, y));
+	sprite.setOrigin(sf::Vector2f(x, y));
 }
 
-IntRect GameObject::GetLayout() const
+void GameObject::setColor(const sf::Color &colour)
 {
-	return rect;
+	sprite.setColor(colour);
+}
+
+FloatRect &GameObject::GetLayout()
+{
+	return sprite.getGlobalBounds();
 }
 
 void GameObject::operator=(GameObject & ref)
 {
 	window = ref.window;
-	shape = ref.shape;
-	rect = ref.rect;
-	shape.setTexture(ref.shape.getTexture(), true);
+	sprite = ref.sprite;
+	sprite.setTexture(*ref.sprite.getTexture(), true);
 }
 
 GameObject::GameObject(RenderWindow *win, Texture *text, int x, int y, bool adjust, int width, int height)
@@ -61,24 +53,9 @@ GameObject::GameObject(RenderWindow *win, Texture *text, int x, int y, bool adju
 		throw NULL;
 	}
 	else
-		shape.setTexture(text);
+		sprite.setTexture(*text);
 	
-	if (adjust)
-	{
-		rect.left = x;
-		rect.top = y;
-		rect.width = shape.getTexture()->getSize().x;
-		rect.height = shape.getTexture()->getSize().y;
-	}
-	else
-	{
-		rect.left = x;
-		rect.top = y;
-		rect.width = width;
-		rect.height = height;
-	}
-	shape.setSize(Vector2f(rect.width, rect.height));
-	shape.setPosition(Vector2f(rect.left, rect.top));
+	sprite.setPosition(Vector2f(x, y));
 }
 
 GameObject::GameObject(RenderWindow *win, std::string &path,  sf::Color transmask, unsigned int x, unsigned int y)
@@ -100,23 +77,21 @@ GameObject::GameObject(RenderWindow *win, std::string &path,  sf::Color transmas
 	
 	temp->loadFromImage(img);
 	temp->setSmooth(true);
+	sprite.setTexture(*temp, true);
 
-	shape.setTexture(temp, true);
-	rect.left = x;
-	rect.top = y;
-	rect.width = shape.getTexture()->getSize().x;
-	rect.height = shape.getTexture()->getSize().y;
-
-	shape.setPosition(Vector2f(rect.left, rect.top));
-	shape.setSize(Vector2f(rect.width, rect.height));
+	sprite.setPosition(Vector2f(x, y));
 }
 
 
 void GameObject::Draw(void)
 {
-	window->draw(shape);
+	window->draw(sprite);
 }
 
+GameObject::operator sf::Sprite() const
+{
+	return sprite;
+}
 
 GameObject::~GameObject()
 {
