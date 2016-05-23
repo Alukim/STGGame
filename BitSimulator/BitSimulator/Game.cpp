@@ -1,179 +1,237 @@
 #include "Game.h"
 
-void Game::MoveUp()
+inline void Game::MoveUp()
 {
-	if (index != 0 && !bit->isLocked())
-	{
-		Tracks[index]->Detach();
-		Tracks[--index]->Attach(bit);
-	}
-}
-
-void Game::MoveDown()
-{
-	if (index != size - 1 && !bit->isLocked())
-	{
-		Tracks[index]->Detach();
-		Tracks[++index]->Attach(bit);
-	}
-}
-
-void Game::Update()
-{
-	GameObject *coll = 0; // pointer to colliding item
-	
-	for (auto track : Tracks)
-	{
-		coll = track->Update(offset);
-		switch (track->events)
-		{
-		case VBonusHit:
-
-			if (bit->isCollecting())
-			{
-				double cover = 0;
-				if ((cover = CoverBonus(bit->GetLayout(), coll->GetLayout())) > 0)
-				{
-					volts->Load(cover * (dynamic_cast<Volt *>(coll)->GetBonus()));
-					Points->Add(cover * 300);
-					if (cover > 0.9f)
-						Perfect = true;
+	if (!bit->isLocked()) {
+		if (bit_level != 0) {
+			for (int i = bit_level - 1; i >= 0; i--) {
+				for (auto track : trackMap[i]) {
+					if (track->canBitAttach(bit)) {
+						prev_bit_level = bit_level;
+						bit_level = i;
+						bit->setHeight(levelHeights[i]);
+						return;
+					}
 				}
 			}
-			break;
-		case ABonusHit:
-			if (bit->isCollecting())
-			{
-				double cover = 0;
-				if (cover = CoverPercentage(bit->GetLayout(), coll->GetLayout()) > 0)
-				{
-					amps->Load(cover*(dynamic_cast<Amper *>(coll)->GetBonus()));
-
-					if (cover > 0.9f)		Perfect = true;
-				}
-			}
-			break;
-		case Elem_Entered:
-			bit->EnterGate(dynamic_cast<LogicElem*>(coll));
-			break;
-
-		case Bit_Annihillated:
-			break;
-		case CheckpointReached:
-			break;
-		case Run_Off_Fuel:
-			// goes to endgame screen
-			break;
-
-		case None:
-			if (bit->isLocked())
-			{				
-				bit->LeaveGate();
-				if (bit->Propagate())
-					Points->Add(1);
-				else
-				{
-					// koniec gry
-				}
-			}
-			break;
 		}
 	}
 }
 
-void Game::Draw()
+inline void Game::MoveDown()
+{
+	// if bit is not entering or leaving a gate - free to move
+	if (!bit->isLocked()) { 
+		// if bit is not on the last track (nothing to check)
+		if (bit_level != TRACK_AMOUNT - 1) {
+			// search through the tracks below the current one to transfer bit there
+			for (int i = bit_level + 1; i < TRACK_AMOUNT; i++) {
+				// search through every piece of the track on given level
+				for (auto track : trackMap[i]) {
+					// checks if dims of bit are encloses in track dims
+					if (track->canBitAttach(bit)) {
+						prev_bit_level = bit_level;
+						bit_level = i;
+						bit->setHeight(levelHeights[i]);
+						track->setValue(bit->Value());
+						// if bit moved - get out of function
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
+inline void Game::Update()
+{
+	// 1. sprawdz czy bit nie wpierdolil sie na element przy moveup/movedown
+	if (updateTimer.getElapsedTime().asMilliseconds() >= UPS) {
+		updateTimer.restart();
+		bool track_collision = false;
+		bit->Update();
+		for (auto &trackList : trackMap)
+		{
+			for (auto &track : trackList)
+				track->Update(offset);
+		}
+
+		for (auto &elem : elems)
+		{
+			FloatRect floatRect = elem->getGlobalBounds();
+			FloatRect bitRect = bit->getGlobalBounds();
+			if (LogicElem * temp = dynamic_cast<LogicElem *>(elem))
+			{
+				if (bitRect.intersects(floatRect))
+				{
+					if (bit->hasMoved()) {
+						bit->getBack();
+					}
+					else if (!bit->isEntering())
+					{
+						bit->EnterLogicElem(temp);
+					}
+				}
+			}
+			else
+			{
+				if (bit->isCollecting())
+				{
+					// dodawanie voltów
+					if (Volt * temp = dynamic_cast<Volt*>(elem))
+						Points->Add(temp->GetBonus());
+
+					// dodawanie amperów
+					else
+						Points->Add(dynamic_cast<Amper*>(elem)->GetBonus());
+				}
+			}
+			elem->move(-offset, 0);
+		}
+		if (pixelCounter)
+			IncrementPixelCounter();
+		
+		// dodawanie nowych elementów do listy
+	}
+}
+
+inline void Game::IncrementPixelCounter()
+{
+	++pixelCounter;
+}
+
+inline void Game::Draw()
 {
 	Points->Draw();
-	for (int i = 0; i < size; i++)
-		Tracks[i]->Draw();
-	bit->Draw();
 	volts->Draw();
+
+	for (auto &tracklist : trackMap)
+	{
+		for (auto &elem : tracklist)
+			Window->draw(elem->sprite);
+	}
+	for (auto &elem : elems)
+		Window->draw(*elem);
+
+	if (bit->Visible)
+		Window->draw(*bit);
+}
+
+void Game::AddLogicElem(LogicElem * newObject, int trackNumber, int inputCount)
+{
+	newObject->setPosition(1024, levelHeights[trackNumber] - Track::trackHeight / 2);
+	elems.push_back(newObject);
+
+	if (inputCount == 2) 
+	{
+		trackMap[trackNumber].back()->Cut();
+		trackMap[trackNumber + 1].back()->Cut();
+		trackMap[trackNumber + 1].push_back(new Track(levelHeights[trackNumber + 1], true, true, 1024));
+		trackMap[trackNumber + 2].back()->Cut();
+	}
+	else 
+	{
+		trackMap[trackNumber].back()->Cut();
+		trackMap[trackNumber + 1].back()->Cut();
+		trackMap[trackNumber + 2].back()->Cut();
+		trackMap[trackNumber + 3].back()->Cut();
+		trackMap[trackNumber + 4].back()->Cut();
+	}
+
+}
+
+void Game::StartTrack(int level, bool mod, bool value)
+{
+	trackMap[level].push_back(new Track(levelHeights[level], mod, value, 1024));
 }
 
 Game::Game()
 {
 	Fail = false;
-
+	tim.restart();
+	updateTimer.restart();
 	Window = new sf::RenderWindow(sf::VideoMode(1024, 768, 32), "BitSimulator", sf::Style::Default);
-	Window->setFramerateLimit(FPS);
+
 	if (!Font.loadFromFile(fntpath + "bellfort.otf"))
 		Fail = true;
 
 	volts = new Battery(Window, 2500, 5000, txtpath + "bat1.png");
 	Points = new Score(Window, &Font);
 
-	bit = new Bit(Window, txtpath + "bit.png");
-	bit->SetState(true);
 
-	ElemEntered = false;
 	Track::SetTexture(txtpath + "track.png");
+	Track::SetWindowPointer(Window);
+	trackMap[0].push_back(new Track(levelHeights[0], true, false, 0));
+	trackMap[1].push_back(new Track(levelHeights[1], true, false, 0));
+	trackMap[2].push_back(new Track(levelHeights[2], true, false, 0));
+	trackMap[3].push_back(new Track(levelHeights[3], true, false, 0));
+	trackMap[4].push_back(new Track(levelHeights[4], true, false, 200));
+	trackMap[5].push_back(new Track(levelHeights[5], true, false, 200));
+	trackMap[6].push_back(new Track(levelHeights[6], true, false, 200));
+	trackMap[7].push_back(new Track(levelHeights[7], true, false, 200));
 
-	Tracks[0] = new Track(Window, 200);
-	Tracks[1] = new Track(Window, 280);
-	Tracks[2] = new Track(Window, 360);
-	Tracks[3] = new Track(Window, 440);
-	Tracks[4] = new Track(Window, 520);
-	Tracks[5] = new Track(Window, 600);
+	
 
-	Tracks[index = 2]->Attach(bit);
+	Image temp;
+	temp.loadFromFile(txtpath + "Gates/And.png");
+	temp.createMaskFromColor(Color(255, 0, 255));
+	AND2Texture.loadFromImage(temp);
+	AddLogicElem(new AND2(AND2Texture), 2, 2);
+	AddLogicElem(new AND2(AND2Texture), 5, 2);
 
-	offset = 0.5f;
+	temp.loadFromFile(txtpath + "bit.png");
+	temp.createMaskFromColor(Color(255, 0, 255));
+
+	BitTexture.loadFromImage(temp);
+	bit = new Bit(BitTexture);
+
+	bit->setPosition(100, levelHeights[prev_bit_level = bit_level = 3]);
+	offset = 1.4;
 }
 
 void Game::Play()
 {
-	//Tracks[0]->AddElem(new AND2(Window, txtpath + "Gates/And.png"));
-	Tracks[0]->AddElem(new Volt(Window, txtpath + "VBonus.png", 200));
-	while (Window->isOpen())
-	{
-		while (Window->pollEvent(events))
-		{
-			if (events.type == sf::Event::KeyPressed
-				&& (events.key.code == sf::Keyboard::Up || events.key.code == sf::Keyboard::W))
-			{
+	while (Window->isOpen()) {
+		while (Window->pollEvent(events)) {
+			if (events.type == Event::KeyPressed && 
+				(events.key.code == Keyboard::Up || events.key.code == Keyboard::W))
 				MoveUp();
-			}
-			else if (events.type == sf::Event::KeyPressed
-				&& (events.key.code == sf::Keyboard::Down || events.key.code == sf::Keyboard::S))
-			{
+
+			else if (events.type == Event::KeyPressed && 
+				(events.key.code == Keyboard::Down || events.key.code == Keyboard::S))
 				MoveDown();
-			}
 
-			else if (events.type == sf::Event::KeyPressed
-				&& events.key.code == sf::Keyboard::Space)
-			{
-				bit->ChangeState();
+			else if (events.type == Event::KeyPressed
+				&& events.key.code == Keyboard::Space) {
+				bit->changeValue();
 			}
+			else if (events.type == Event::KeyPressed
+				&& events.key.code == Keyboard::LControl) {
+			}
+			else if (events.type == Event::KeyReleased
+				&& events.key.code == Keyboard::LControl) {
+			}
+			else if (events.type == Event::KeyPressed && events.key.code == Keyboard::Right) {
+				offset = 3.0;
+			}
+			else if (events.type == Event::KeyReleased && events.key.code == Keyboard::Right) {
+				offset = 1.4;
+			}
+			else if (events.type == Event::Closed)
+				Window->close();
 
-			else if (events.type == sf::Event::KeyPressed
-				&& events.key.code == sf::Keyboard::LControl)
-			{
-				bit->setCollectingState(true);
-			}
-			else if (events.type == sf::Event::KeyReleased
-				&& events.key.code == sf::Keyboard::LControl)
-			{
-				bit->setCollectingState(false);
-			}
-			else if (events.type == sf::Event::KeyPressed && events.key.code == sf::Keyboard::Right)
-			{
-				if (!bit->isLocked())
-					offset = 2.0f;
-			}
-
-			else if (events.type == sf::Event::KeyReleased && events.key.code == sf::Keyboard::Right)
-			{
-				offset = 0.8f;
-			}
-			else if (events.type == sf::Event::Closed)			Window->close();
-
-			else if (events.type == sf::Event::KeyPressed
-				&& events.key.code == sf::Keyboard::Escape)		Window->close();
+			else if (events.type == Event::KeyPressed && events.key.code == Keyboard::Escape)
+				Window->close();
+		}
+		++cont;
+		if (tim.getElapsedTime().asSeconds() > 1) {
+			std::cout << cont << std::endl;
+			cont = 0;
+			tim.restart();
 		}
 
 		Update();
-
-		Window->clear();
+		Window->clear(Color::Blue);
 		Draw();
 		Window->display();
 	}

@@ -3,7 +3,7 @@
   <Class Name="Track" Collapsed="true">
     <Position X="15.25" Y="12.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAACEABAgIAQEAAAAAAALAABgIIAAAAAACEQAQ=</HashCode>
+      <HashCode>AAQAAAAACEABAgIAQEAAAAAAALAABiIIAAAAAACEQAQ=</HashCode>
       <FileName>BitTrack.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -11,20 +11,20 @@
     <Position X="21" Y="1" Width="1.5" />
     <InheritanceLine Type="GameObject" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="4.312" Y="1.062" />
-        <Point X="4.312" Y="1.375" />
+        <Point X="4.447" Y="1.062" />
+        <Point X="4.447" Y="1.375" />
         <Point X="21" Y="1.375" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AEQADAAgAAAABoAACCAAAAAAAAgAAACAAAAAhQQEQAg=</HashCode>
+      <HashCode>AEQADEAgAAAABoAACCAAAAAAAAgAAACAAAAAhQQEQAg=</HashCode>
       <FileName>BitTrack.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Bonus&lt;letter&gt;" Collapsed="true">
     <Position X="3.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAABAAAAAAAAgAAAAAAhAAAAgAAACAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAABAAAAAAAAgAAABAAhAAAAgAAACAIAAAAAAAAAAA=</HashCode>
       <FileName>Bonus.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -36,13 +36,13 @@
     </TypeIdentifier>
   </Class>
   <Class Name="LogicElem" Collapsed="true">
-    <Position X="15.5" Y="3.75" Width="1.5" />
+    <Position X="15.5" Y="3.5" Width="1.5" />
     <InheritanceLine Type="GameObject" FixedFromPoint="true">
       <Path>
-        <Point X="4.312" Y="1.062" />
-        <Point X="4.312" Y="1.312" />
-        <Point X="16.25" Y="1.312" />
-        <Point X="16.25" Y="3.75" />
+        <Point X="4.447" Y="1.062" />
+        <Point X="4.447" Y="1.375" />
+        <Point X="16.25" Y="1.375" />
+        <Point X="16.25" Y="3.5" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -114,7 +114,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="GameObject" Collapsed="true">
-    <Position X="3.5" Y="0.5" Width="1.5" />
+    <Position X="3.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>ABAAAAAAAIAAAgAIAAIAAAAAABAAAgAIAAAgAAIIAAA=</HashCode>
       <FileName>GameObject.h</FileName>
@@ -163,14 +163,14 @@
     </TypeIdentifier>
   </Class>
   <Typedef Name="Amper" Collapsed="true">
-    <Position X="3.5" Y="4.5" Width="1.5" />
+    <Position X="4.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Bonus.h</FileName>
     </TypeIdentifier>
   </Typedef>
   <Typedef Name="Volt" Collapsed="true">
-    <Position X="0.5" Y="1.75" Width="1.5" />
+    <Position X="2.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Bonus.h</FileName>

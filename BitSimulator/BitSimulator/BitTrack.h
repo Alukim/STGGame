@@ -1,117 +1,133 @@
 #pragma once
-#include "GameObject.h"
 #include <SFML\Graphics.hpp>
 #include "Gates.h"
 #include "Bonus.h"
 #include "GUI.h"
 #include "Utilities.h"
 #include <list>
+#include <fstream>
+
+using namespace std;
 
 
 const std::string txtpath	 = "Resource/Textures/";
 const std::string mscpath	 = "Resource/Music/";
 const std::string fntpath	 = "Resource/Fonts/";
 
-enum TrackEvents
+class Bit;
+
+
+struct track_dim
 {
-	None					=		0x10,
-	VBonusHit				=		0x01,
-	ABonusHit				=		0x02,
-	Elem_Entered			=		0x03,
-	Bit_Annihillated		=		0x05,
-	CheckpointReached		=		0x06,
-	Run_Off_Fuel			=		0x07,
-	No_Bit					=		0x08
+	float b_left;
+	float b_right;
 };
 
-class Bit;
 
 class Track
 {
-private:
 	
-	sf::RenderWindow *window;			//> pointer to window the track will be drawn in
-	sf::Sprite sprite;					//> sprite of track
-	std::list <GameObject *> draw_list;	//> list of elements placed on track
-	Bit *bitptr;						//> pointer to bit on track, if there is not any, pointer is null
+	bool mod;
+	bool val;
+
+	bool end = false;
 	
-	sf::Clock Timer;
-
-	const int Tick = 50;
-	float length;						//> length of track
-	float h_offset;						//> height offset of the track	
-
-	static sf::Texture texture;
-
-	bool Perfect = false;
-	bool value = false;
+	static Texture *texture;
+	static RenderWindow * window;
+	
 public:
 	
-	TrackEvents events = None;
+	static int trackHeight;
+	int level;
 
-	//> constructor
-	Track(sf::RenderWindow *win, float y);
+	bool getValue(void) const;
 
-
-	//> Attaches a bit to the track
-	//> /a ptr - pointer to bit object
-	void Attach(Bit *ptr);
-
-	//> Detaches a bit from the track
-	//> Returns pointer to detached bit
-	void Detach();
+	Sprite sprite;
 	
-	static void SetTexture(std::string &path);
+	track_dim dims;
 
+	Track(int level, bool mod, bool value, int border_left);
+	
+	static void SetTexture(std::string & path);
 
-	//> Updates the whole track(objects within included)
-	GameObject *Update(float off);
+	static void SetWindowPointer(RenderWindow * render);
 
+	bool canBitAttach(Bit * bitPointer);
 
-	//> Adds an elemement to the track
-	//> /a new_elem - pointer to new element object
-	void AddElem(GameObject *new_elem);
+	void setLevel(int lvl);
 
+	void Update(float offset);
 
-	GameObject * GetElem();
+	void setValue(const bool & value);
 
+	bool toDelete();
 
-	//> Draws whole track
-	void Draw();
+	void Cut();
 };
 
 
-class Bit : public GameObject
+class Bit : public Sprite
 {
-	bool Collecting;
+	
+	Clock timer;
+	const int Tick = 20;
+	int previousHeight;
+	int currentHeight;
+	bool value;
+	bool Moved;
+	bool Locked;
 	bool Entering;
 	bool Leaving;
-	bool Locked;
-	bool State;
+	bool Collecting;
+	LogicElem * propagateObject;
 
-	LogicElem * prop = NULL;
-	
-
-	sf::Clock Timer;
-	const int Tick = 350;
 public:
-	Bit(sf::RenderWindow *&render_target, std::string &path);
 	
-	void ChangeState();
-	void SetState(bool state);
-	bool GetState();
+	bool Visible;
 
-	void EnterGate(LogicElem* elem);
-	void LeaveGate();
-	bool Propagate();
+	Bit(Texture & text);
 
-	void setCollectingState(bool state);
+	void setHeight(const int level);
 
-	bool isCollecting();
+	void getBack();
 
-	bool isLocked();
+	void attachToTrack(Track * track);
 
-	bool Update();
+	int Update();
 
-	void Draw();
+	bool & hasMoved();
+
+	bool & isLocked();
+
+	bool & isEntering();
+
+	bool & isLeaving();
+
+	bool & isCollecting();
+
+	bool & Value();
+	
+	void changeValue(); 
+	
+	void EnterLogicElem(LogicElem * object);
+};
+
+
+struct ElemScript {
+	int startingPixel;
+	int elemType;
+	int inputAmount;
+};
+
+class LevelManager {
+private:
+	std::list <ElemScript> elems;
+public:
+	LevelManager()
+	{
+	}
+
+	void ReadLevel(int levelNumber);
+
+
 };

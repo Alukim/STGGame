@@ -1,225 +1,185 @@
 #include "BitTrack.h"
 
-sf::Texture Track::texture = sf::Texture();
+sf::Texture *Track::texture = new sf::Texture;
+sf::RenderWindow *Track::window = 0;
+int Track::trackHeight = 0;
 
-
-Track::Track(sf::RenderWindow *win,  float y)
+Bit::Bit(Texture &text) : Sprite(text)
 {
-	window = win;		// sets window pointer
-	bitptr = NULL;		// sets bit pointer to null (no bit set on track)
-	events = None;
-
-	sf::Vector2u size = window->getSize();
-	Timer.restart();
-
-	h_offset = y;	// height which track begin with
-	length = size.x;
-	sprite.setTexture(texture);
-	sprite.setTextureRect(sf::IntRect(0, 0, size.x, texture.getSize().y));
-	sprite.setPosition(sf::Vector2f(0, h_offset));
-}
-
-void Track::Attach(Bit * ptr)
-{
-	bitptr = ptr;
-	sf::FloatRect pos = sprite.getGlobalBounds();
-	value = bitptr->GetState();
-	bitptr->SetPosition((pos.width * 0.5F), pos.top + pos.height/2);
-}
-
-void Track::SetTexture(std::string &path)
-{
-	texture.loadFromFile(path);
-	texture.setRepeated(true);
-}
-
-void Track::Detach()
-{
-	bitptr = NULL;
-	value = false;
-}
-
-GameObject *Track::Update(float off)
-{
-		sf::FloatRect rect;
-		GameObject *temp = 0;
-		events = TrackEvents::No_Bit;
-		draw_list.remove_if([](GameObject* x) { return (x->GetLayout().left + x->GetLayout().width < 0); });
-		if(Timer.getElapsedTime().asMicroseconds() > Tick)
-		{ 
-			for (auto elem : draw_list)
-			{
-				elem->Move(-off, 0);
-				rect = elem->GetLayout();
-
-				if (rect.left + rect.width < 0)
-				{
-					draw_list.remove(elem);
-					break;
-				}
-				// checking only if bit is on the track
-				if (bitptr)
-				{
-					bitptr->Update();
-					// checks for interaction of bit and track element
-					events = TrackEvents::None;
-					sf::FloatRect fl = bitptr->GetLayout();
-					if (Intersect(fl, rect))
-					{
-						if (Volt *v = dynamic_cast<Volt *>(elem))
-						{
-							if (v->isVisible())
-								events = TrackEvents::VBonusHit;
-						}
-						else if (dynamic_cast<Amper *>(elem))
-							events = TrackEvents::ABonusHit;
-
-						else if (dynamic_cast<LogicElem *>(elem))
-							events = TrackEvents::Elem_Entered;
-						temp = elem;
-					}
-				}
-			}
-			Timer.restart();
-		}
-		return temp;
-}
-
-void Track::AddElem(GameObject *new_elem)
-{
-
-	sf::FloatRect pos = sprite.getGlobalBounds();
-
-	new_elem->SetPosition(pos.width, pos.top);
-
-	draw_list.push_back(new_elem);
-}
-
-GameObject * Track::GetElem()
-{
-	return (*draw_list.begin());
-}
-
-void Track::Draw()
-{
-	if (value)
-		sprite.setColor(sf::Color(0,150,0));
-	else
-		sprite.setColor(sf::Color(150,0,0));
-	window->draw(sprite);
-
-	if (bitptr)		
-		bitptr->Draw();
-
-	for (auto temp : draw_list)
-	{
-		temp->Draw();
-	}
-
-}
-
-Bit::Bit(sf::RenderWindow *& render_target, std::string & path)
-	: GameObject(render_target, path, sf::Color(255,0,255))
-{
-	Collecting = false;
+	FloatRect rect = getLocalBounds();
+	setOrigin(Vector2f(rect.width / 2, rect.height / 2));
+	Locked = false;
+	Moved = false;
 	Entering = false;
 	Leaving = false;
-	State = false;
-	Locked = false;
-	sf::FloatRect rect = sprite.getGlobalBounds();
-	sprite.setOrigin(Vector2f(rect.width / 2, rect.height / 2));
+	Visible = true;
+	value = true;
 }
 
-void Bit::ChangeState()
+void Bit::setHeight(const int level)
 {
-	if (State = !State)
-		setColor(sf::Color::Green);
-	else
-		setColor(sf::Color::Cyan);
+	Vector2f vec = getPosition();
+	setPosition(vec.x, level);
 }
 
-void Bit::SetState(bool state)
+void Bit::getBack()
 {
-	if (State = state)	setColor(sf::Color::Green);
-	else				setColor(sf::Color::Cyan);
+	currentHeight = previousHeight;
+	FloatRect bitRect = getGlobalBounds();
+	setPosition(bitRect.left, previousHeight);
 }
 
-bool Bit::GetState()
+void Bit::attachToTrack(Track * track)
 {
-	return State;
+	
 }
 
-void Bit::EnterGate(LogicElem * elem)
-{
-	if (prop != elem)
-	{
-		prop = elem;
-		Entering = true;
-		Locked = true;
-	}
-}
 
-void Bit::LeaveGate()
+int Bit::Update()
 {
-	if (prop)
-	{
-		Leaving = true;
-	}
-}
-
-bool Bit::Propagate()
-{
-	if (Entering)
-	{
-		bool x = prop->Propagate();
-		prop = NULL;
-		Entering = false;
-		return x;
-	}
-}
-
-void Bit::setCollectingState(bool state)
-{
-	Collecting = state;
-}
-
-bool Bit::isCollecting()
-{
-	return Collecting;
-}
-
-bool Bit::isLocked()
-{
-	return Locked;
-}
-
-bool Bit::Update()
-{
-	if (Timer.getElapsedTime().asMilliseconds() > Tick)
-	{
-		sf::Vector2f vec = sprite.getScale();
-		if (Entering && vec.x > 0.1f)
-		{
-			sprite.setScale(sf::Vector2f(vec.x - 0.045f, vec.y - 0.045f));
+	if (value)
+		setColor(Color::Red);
+	else 
+		setColor(Color::Blue);
+	
+	Vector2f scale = getScale();
+	if (Entering) {
+		if (scale.x >= 0.1)
+			setScale(scale.x - 0.03, scale.x - 0.03);
+		else {
+			setScale(0.03, 0.03);
+			Entering = false;
+			Visible = false;
+			Leaving = true;
+			// propagacja i chuj i czesc
 		}
-		else if (Leaving)
+	}
+	else if (Leaving) {
+		if (scale.x < 1.0)
 		{
-			
-			sprite.setScale(sf::Vector2f(vec.x + 60.0F / 1000, vec.y + 60.0F / 1000));
-			if (vec.x >= 1)
-			{
-				Leaving = false;
-				Locked = false;
-				sprite.setScale(sf::Vector2f(1, 1));
-			}
+			setScale(scale.x + 0.02, scale.x + 0.02);
+			if (scale.x > 0.1)
+				Visible = true;
 		}
-		Timer.restart();
+		else {
+			setScale(1.0, 1.0);
+			Leaving = false;
+		}
 	}
 	return false;
 }
 
-void Bit::Draw()
+bool & Bit::hasMoved()
 {
-	if (sprite.getScale().x > 0.1f)
-		window->draw(sprite);
+	return Moved;
+}
+
+bool & Bit::isLocked()
+{
+	return Locked;
+}
+
+bool & Bit::isEntering()
+{
+	return Entering;
+}
+
+bool & Bit::isLeaving()
+{
+	return Leaving;
+}
+
+bool & Bit::isCollecting()
+{
+	return Collecting;
+}
+
+bool & Bit::Value()
+{
+	return value;
+}
+
+void Bit::changeValue()
+{
+	value = !value;
+}
+
+void Bit::EnterLogicElem(LogicElem * object)
+{
+	propagateObject = object;
+	Entering = true;
+}
+
+
+bool Track::getValue(void) const
+{
+	return val;
+}
+
+Track::Track(int lvl, bool alter, bool value, int border_left)
+{
+	dims.b_left = border_left;
+	dims.b_right = window->getSize().x + 50;
+	mod = alter;
+	val = value;
+	level = lvl;
+	sprite.setTexture(*texture);
+	sprite.setTextureRect(IntRect(0, 0, dims.b_left - dims.b_right, trackHeight));
+	sprite.setOrigin(0, trackHeight / 2);
+	sprite.setPosition((float)border_left, level);
+}
+
+void Track::SetTexture(std::string & path)
+{
+	texture->loadFromFile(path);
+	texture->setSmooth(true);
+	texture->setRepeated(true);
+	trackHeight = texture->getSize().y;
+}
+
+void Track::SetWindowPointer(RenderWindow * render)
+{
+	window = render;
+}
+
+bool Track::canBitAttach(Bit * bitPointer)
+{
+	FloatRect bitRect = bitPointer->getGlobalBounds();
+	return bitRect.left > dims.b_left && bitRect.left + bitRect.width < dims.b_right;
+}
+
+void Track::Update(float offset)
+{
+	if (end)
+	{
+		dims.b_left -= offset;
+		dims.b_right -= offset;
+	}
+	else
+		dims.b_left -= offset;
+
+	sprite.setTextureRect(IntRect(0, 0, dims.b_right - dims.b_left, trackHeight));
+	sprite.move(-offset, 0);
+}
+
+void Track::setValue(const bool & value)
+{
+	val = value;
+}
+
+bool Track::toDelete()
+{
+	return dims.b_right < 0;
+}
+
+void Track::Cut()
+{
+	end = true;
+}
+
+void LevelManager::ReadLevel(int levelNumber)
+{
+	string temp("Level");
+	temp += levelNumber;
+	temp = temp + ".txt";
 }

@@ -1,31 +1,36 @@
 #pragma once
-#include "GameObject.h"
+#include <SFML\Graphics.hpp>
 #include <string>
 #include <iostream>
 #include <math.h>
 
+using namespace sf;
+
+class Track;
 
 // ====================================================== LOGIC ELEM BASE CLASS =====================================================
-class LogicElem : public GameObject
+class LogicElem : public Sprite
 {
 protected:
-	bool * _input;
+	Track ** inputPointers;
+	Track * outputPointer;
 	int inputs_count;
 public:
 
 	//> Default constructor
 	//> initializes inputs number
-	LogicElem(sf::RenderWindow *winref, std::string path, int q_inputs) : GameObject(winref, path, sf::Color(255, 0, 255)), inputs_count(q_inputs)
+	LogicElem(Texture & text, int q_inputs) : Sprite(text), inputs_count(q_inputs)
 	{
-		_input = new bool[inputs_count];
+		inputPointers = new Track*[inputs_count];
+		outputPointer = NULL;
 	}
 
 	//> Pure virtual function used to simulate gate work
-	virtual bool Propagate() = 0;
+	virtual bool Propagate(void) = 0;
 
-	virtual ~LogicElem()
+	virtual ~LogicElem(void)
 	{
-		delete _input;
+		delete inputPointers;
 	}
 
 };
@@ -37,17 +42,17 @@ template <int inputs>
 class NORGate : public LogicElem
 {
 public:
-	NORGate<inputs>(sf::RenderWindow * window, std::string path) : LogicElem(window, path, inputs)
+	NORGate<inputs>(Texture & text) : LogicElem(inputs)
 	{
 	}
-	bool Propagate() override;
+	bool Propagate(void) override;
 };
 template<int inputs>
-inline bool NORGate<inputs>::Propagate()
+inline bool NORGate<inputs>::Propagate(void)
 {
 	for (int i = 0; i < inputs_count; i++)
 	{
-		if (_input[i]) { std::cout << "Propagation on gate: FALSE"; return false; }
+		if (inputPointers[i]->getValue()) { std::cout << "Propagation on gate: FALSE"; return false; }
 	}
 	std::cout << "Propagation on gate: TRUE";
 	return true;
@@ -66,20 +71,20 @@ template <int inputs>
 class NANDGate : public LogicElem
 {
 public:
-	NANDGate<inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, inputs)
+	NANDGate<inputs>(Texture & text) : LogicElem(text, inputs)
 	{
 	}
 
-	bool Propagate() override;
+	bool Propagate(void) override;
 };
 
 
 template<int inputs>
-inline bool NANDGate<inputs>::Propagate()
+inline bool NANDGate<inputs>::Propagate(void)
 {
 	for (int i = 0; i < inputs; i++)
 	{
-		if (!_input[i]) { std::cout << "Propagation on gate: TRUE"; return true; }
+		if (!inputPointers[i]->getValue()) { std::cout << "Propagation on gate: TRUE"; return true; }
 	}
 	std::cout << "Propagation on gate: FALSE";
 	return false;
@@ -93,23 +98,23 @@ template <int inputs>
 class XORGate : public LogicElem
 {
 public:
-	XORGate<inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, inputs)
+	XORGate<inputs>(sf::RenderWindow * window, std::string & path) : LogicElem(window, path, inputs)
 	{
 	}
 
-	bool Propagate() override;
+	bool Propagate(void) override;
 };
 
 
 
 template<int inputs>
-inline bool XORGate<inputs>::Propagate()
+inline bool XORGate<inputs>::Propagate(void)
 {
 	std::cout << "Hello, this code better should work" << std::endl;
 	bool result = false;
 	for (int i = 0; i < inputs_count; i++)
 	{
-		if (_input[i]) result = !result;
+		if (inputPointers[i]->getValue()) result = !result;
 
 	}
 	std::cout << "Propagation on gate: " << result << std::endl;
@@ -134,7 +139,7 @@ public:
 	{
 	}
 
-	bool Propagate() override;
+	bool Propagate(void) override;
 };
 
 typedef ORGate<2> OR2;
@@ -142,11 +147,11 @@ typedef ORGate<3> OR3;
 
 
 template<int inputs>
-inline bool ORGate<inputs>::Propagate()
+inline bool ORGate<inputs>::Propagate(void)
 {
 	for (int i = 0; i < inputs_count; i++)
 	{
-		if (_input[i]) return true;
+		if (inputPointers[i]->getValue()) return true;
 	}
 
 	return false;
@@ -158,11 +163,11 @@ template <int inputs>
 class ANDGate : public LogicElem
 {
 public:
-	ANDGate<inputs>(sf::RenderWindow *win, std::string path) : LogicElem(win, path,2)
+	ANDGate<inputs>(Texture & text) : LogicElem(text, inputs)
 	{
 	}
 
-	bool Propagate() override;
+	bool Propagate(void) override;
 
 };
 
@@ -172,11 +177,11 @@ typedef ANDGate<3> AND3;
 
 
 template<int inputs>
-inline bool ANDGate<inputs>::Propagate()
+inline bool ANDGate<inputs>::Propagate(void)
 {
 	for (int i = 0; i < inputs_count; i++)
 	{
-		if (!_input[i]) return false;
+		if (!inputPointers[i]->getValue()) return false;
 	}
 	return true;
 }
@@ -192,24 +197,22 @@ class Multiplexer : public LogicElem
 	bool *add_input;
 
 public : 
-	Multiplexer<address_inputs>(sf::RenderWindow *window, std::string path) : LogicElem(window, path, (int)std::pow(2, address_inputs))
+	Multiplexer<address_inputs>(std::string & path) : LogicElem(path, (int)std::pow(2, address_inputs))
 	{
-		_input = new bool[inputs_count];
-		for (int i = 0; i < inputs_count; i++)
-			_input[i] = false;
+		inputPointers = new Track * [inputs_count];
 		
 		add_input = new bool[address_inputs];
 		for (int i = 0; i < address_inputs; i++)
 			add_input[i] = false;
 	}
-	bool Propagate();
+	bool Propagate(void);
 };
 
 typedef Multiplexer<2> Multiplexer4;
 typedef Multiplexer<1> Multiplexer2;
 
 template<int address_inputs>
-inline bool Multiplexer<address_inputs>::Propagate()
+inline bool Multiplexer<address_inputs>::Propagate(void)
 {
 	int address = 0;
 
@@ -222,7 +225,7 @@ inline bool Multiplexer<address_inputs>::Propagate()
 		}
 	}
 
-	if (_input[address])
+	if (inputPointers[address]->getValue())
 		return true;
 	
 	else return false;
@@ -234,22 +237,22 @@ class FlipD : public LogicElem
 private:
 	bool output;
 public:
-	bool Propagate() override;
-	FlipD(sf::RenderWindow *window, std::string path);
-	~FlipD();
+	bool Propagate(void) override;
+	FlipD(sf::RenderWindow * window, std::string & path);
+	~FlipD(void);
 };
 
 
 template<int input>
-inline FlipD<input>::FlipD(sf::RenderWindow *window, std::string path) : LogicElem(window, path, 2)
+inline FlipD<input>::FlipD(sf::RenderWindow * window, std::string & path) : LogicElem(window, path, 2)
 {
 }
 
 template<int input>
-inline bool FlipD<input>::Propagate()
+inline bool FlipD<input>::Propagate(void)
 {
-		if (_input[1])
-			return _input[0] == output;
+		if (inputPointers[1]->getValue())
+			return (input[0]->getValue() == output);
 		
 		else return false; //End Game
 }
@@ -265,32 +268,33 @@ private:
 	bool output;
 public:
 	bool Propagate() override; // _input[0] == J && _input[2] == K
-	FlipJK(sf::RenderWindow *window, std::string path);
-	~FlipJK();
+	FlipJK(Texture & text);
+	~FlipJK(void);
 };
 
 template<int input>
-inline FlipJK<input>::FlipJK(sf::RenderWindow *window, std::string path) : LogicElem(window, path, 3)
+inline FlipJK<input>::FlipJK(Texture & text) : LogicElem(text, 3)
 {
 }
 
 template<int input>
-inline FlipJK<input>::~FlipJK()
+inline FlipJK<input>::~FlipJK(void)
 {
 }
 
 template<int input>
-inline bool FlipJK<input>::Propagate() 
+inline bool FlipJK<input>::Propagate(void)
 {
 	bool temp = false;
-	if (_input[1])
+	if (inputPointers[1]->getValue())
 	{
-		if (!_input[0] && !_input[2])
+		if (!inputPointers[0]->getValue() && !inputPointers[2]->getValue())
 			temp = output;
-		else if ((!_input[0] && _input[2]) || (_input[0] && !_input[2]))
-			temp = _input[0];
+		else if ((!inputPointers[0]->getValue() && inputPointers[2]->getValue())
+			|| (inputPointers[0]->getValue() && !inputPointers[2]->getValue()))
+			temp = inputPointers[0]->getValue();
 
-		else if (_input[0] && _input[2])
+		else if (inputPointers[0]->getValue() && inputPointers[2]->getValue())
 			temp = !output;
 
 		return temp == output;
@@ -307,16 +311,16 @@ private:
 	bool output;
 public:
 	bool Propagate() override; //_input[0] == T;
-	FlipT(sf::RenderWindow *window, std::string path);
-	~FlipT();
+	FlipT(Texture & text);
+	~FlipT(void);
 };
 
 
 template<int input>
-inline bool FlipT<input>::Propagate()
+inline bool FlipT<input>::Propagate(void)
 {
 	bool temp;
-	if (_input[0])
+	if (inputPointers[0]->getValue())
 	{
 		temp = !output;
 	}
@@ -324,18 +328,17 @@ inline bool FlipT<input>::Propagate()
 	{
 		temp = output;
 	}
-	if (_input[1])
+	if (inputPointers[1]->getValue())
 	{
 		temp == output ? return true : return false;
 	}
 	else
 	{
-		//End Game 
 		return false;
 	}
 }
 
 template<int input>
-inline FlipT<input>::FlipT(sf::RenderWindow * window, std::string path) : LogicElem(window, path, 2)
+inline FlipT<input>::FlipT(Texture & text) : LogicElem(text, 2)
 {
 }
