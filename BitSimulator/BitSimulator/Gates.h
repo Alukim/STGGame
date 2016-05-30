@@ -28,6 +28,18 @@ public:
 	//> Pure virtual function used to simulate gate work
 	virtual bool Propagate(void) = 0;
 
+	void LogicElem::setInputTrack(int input, Track * Pointer)
+	{
+		inputPointers[input] = Pointer;
+	}
+
+	void LogicElem::setOutputTrack(Track * Pointer)
+	{
+		outputPointer = Pointer;
+	}
+
+	Track * OutputTrack();
+
 	virtual ~LogicElem(void)
 	{
 		delete inputPointers;

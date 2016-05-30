@@ -20,8 +20,6 @@ private:
 
 	void AddBonus(Sprite * newBonus);
 
-	void StartTrack(int level, bool mod, bool value );
-
 	// Graphic vars
 	const int FPS = 300;
 	const int UPS = 1000 / 120;

@@ -2,14 +2,19 @@
 
 inline void Game::MoveUp()
 {
-	if (!bit->isLocked()) {
-		if (bit_level != 0) {
-			for (int i = bit_level - 1; i >= 0; i--) {
-				for (auto track : trackMap[i]) {
-					if (track->canBitAttach(bit)) {
+	if (!bit->isLocked())
+	{
+		if (bit_level != 0) 
+		{
+			for (int i = bit_level - 1; i >= 0; i--)
+			{
+				for (auto track : trackMap[i])
+				{
+					if (track->canBitAttach(bit))
+					{
 						prev_bit_level = bit_level;
 						bit_level = i;
-						bit->setHeight(levelHeights[i]);
+						bit->attachToTrack(track);
 						return;
 					}
 				}
@@ -21,19 +26,23 @@ inline void Game::MoveUp()
 inline void Game::MoveDown()
 {
 	// if bit is not entering or leaving a gate - free to move
-	if (!bit->isLocked()) { 
+	if (!bit->isLocked()) 
+	{ 
 		// if bit is not on the last track (nothing to check)
-		if (bit_level != TRACK_AMOUNT - 1) {
+		if (bit_level != TRACK_AMOUNT - 1) 
+		{
 			// search through the tracks below the current one to transfer bit there
-			for (int i = bit_level + 1; i < TRACK_AMOUNT; i++) {
+			for (int i = bit_level + 1; i < TRACK_AMOUNT; i++)
+			{
 				// search through every piece of the track on given level
-				for (auto track : trackMap[i]) {
+				for (auto track : trackMap[i]) 
+				{
 					// checks if dims of bit are encloses in track dims
-					if (track->canBitAttach(bit)) {
+					if (track->canBitAttach(bit))
+					{
 						prev_bit_level = bit_level;
 						bit_level = i;
-						bit->setHeight(levelHeights[i]);
-						track->setValue(bit->Value());
+						bit->attachToTrack(track);
 						// if bit moved - get out of function
 						return;
 					}
@@ -113,7 +122,6 @@ inline void Game::Draw()
 	for (auto &elem : elems)
 		Window->draw(*elem);
 
-	if (bit->Visible)
 		Window->draw(*bit);
 }
 
@@ -121,29 +129,39 @@ void Game::AddLogicElem(LogicElem * newObject, int trackNumber, int inputCount)
 {
 	newObject->setPosition(1024, levelHeights[trackNumber] - Track::trackHeight / 2);
 	elems.push_back(newObject);
-
+	Track * temp = nullptr;
 	if (inputCount == 2) 
 	{
-		trackMap[trackNumber].back()->Cut();
-		trackMap[trackNumber + 1].back()->Cut();
-		trackMap[trackNumber + 1].push_back(new Track(levelHeights[trackNumber + 1], true, true, 1024));
-		trackMap[trackNumber + 2].back()->Cut();
+		// setting first input
+		temp = trackMap[trackNumber].back();
+		Track::Cut(temp);
+		newObject->setInputTrack(0, temp);
+		
+		// ending track between 2 inputs
+		Track::Cut(trackMap[trackNumber + 1].back());
+
+		// setting second input
+		temp = trackMap[trackNumber + 2].back();
+		Track::Cut(temp);
+		newObject->setInputTrack(1, temp);
+		
+		// setting output track
+		temp = Track::startNewTrack(levelHeights[trackNumber + 1], trackNumber + 1, true, true);
+		trackMap[trackNumber + 1].push_back(temp);
+		newObject->setOutputTrack(temp);
+
 	}
 	else 
 	{
-		trackMap[trackNumber].back()->Cut();
-		trackMap[trackNumber + 1].back()->Cut();
-		trackMap[trackNumber + 2].back()->Cut();
-		trackMap[trackNumber + 3].back()->Cut();
-		trackMap[trackNumber + 4].back()->Cut();
+		Track::Cut(trackMap[trackNumber].back());
+		Track::Cut(trackMap[trackNumber + 1].back());
+		Track::Cut(trackMap[trackNumber + 2].back());
+		Track::Cut(trackMap[trackNumber + 3].back());
+		Track::Cut(trackMap[trackNumber + 4].back());
 	}
 
 }
 
-void Game::StartTrack(int level, bool mod, bool value)
-{
-	trackMap[level].push_back(new Track(levelHeights[level], mod, value, 1024));
-}
 
 Game::Game()
 {
@@ -184,8 +202,10 @@ Game::Game()
 
 	BitTexture.loadFromImage(temp);
 	bit = new Bit(BitTexture);
-
-	bit->setPosition(100, levelHeights[prev_bit_level = bit_level = 3]);
+	
+	prev_bit_level = bit_level = 3;
+	bit->setPosition(200, 0);
+	bit->attachToTrack(trackMap[3].front());
 	offset = 1.4;
 }
 

@@ -26,7 +26,6 @@ struct track_dim
 
 class Track
 {
-	
 	bool mod;
 	bool val;
 
@@ -39,14 +38,20 @@ public:
 	
 	static int trackHeight;
 	int level;
-
+	
+	Track(int level, bool mod, bool value, int border_left);
+	
+	static void Cut(Track * track);
+	
+	static Track * startNewTrack(int height, int level, bool mod, bool value);
+	
 	bool getValue(void) const;
 
 	Sprite sprite;
 	
 	track_dim dims;
 
-	Track(int level, bool mod, bool value, int border_left);
+	
 	
 	static void SetTexture(std::string & path);
 
@@ -54,25 +59,22 @@ public:
 
 	bool canBitAttach(Bit * bitPointer);
 
-	void setLevel(int lvl);
-
 	void Update(float offset);
 
 	void setValue(const bool & value);
 
 	bool toDelete();
-
-	void Cut();
 };
 
 
 class Bit : public Sprite
 {
-	
+	int state;
 	Clock timer;
 	const int Tick = 20;
 	int previousHeight;
 	int currentHeight;
+	bool startedEntering;
 	bool value;
 	bool Moved;
 	bool Locked;
@@ -80,10 +82,19 @@ class Bit : public Sprite
 	bool Leaving;
 	bool Collecting;
 	LogicElem * propagateObject;
+	Track * currTrack;
 
 public:
 	
-	bool Visible;
+	enum Event
+	{
+		None					= 0x00,
+		ElemEntered				= 0x01,
+		BonusIntersection		= 0x02,
+		CorrectPropagation		= 0x03,
+		IncorrectPropagation	= 0x04,
+		ElemLeft				= 0x05
+	};
 
 	Bit(Texture & text);
 
@@ -91,25 +102,25 @@ public:
 
 	void getBack();
 
-	void attachToTrack(Track * track);
-
 	int Update();
 
-	bool & hasMoved();
+	bool hasMoved();
 
-	bool & isLocked();
+	bool isLocked();
 
-	bool & isEntering();
+	bool isEntering();
 
-	bool & isLeaving();
+	bool isLeaving();
 
-	bool & isCollecting();
+	bool isCollecting();
 
-	bool & Value();
+	bool Value();
 	
 	void changeValue(); 
 	
 	void EnterLogicElem(LogicElem * object);
+	
+	void attachToTrack(Track * track);
 };
 
 

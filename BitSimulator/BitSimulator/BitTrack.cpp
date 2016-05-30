@@ -12,8 +12,9 @@ Bit::Bit(Texture &text) : Sprite(text)
 	Moved = false;
 	Entering = false;
 	Leaving = false;
-	Visible = true;
 	value = true;
+	startedEntering = false;
+	state = Event::None;
 }
 
 void Bit::setHeight(const int level)
@@ -31,7 +32,10 @@ void Bit::getBack()
 
 void Bit::attachToTrack(Track * track)
 {
-	
+	currTrack = track;
+	Vector2f temp = getPosition();
+	setPosition(temp.x, track->level);
+	track->setValue(this->value);
 }
 
 
@@ -43,58 +47,73 @@ int Bit::Update()
 		setColor(Color::Blue);
 	
 	Vector2f scale = getScale();
-	if (Entering) {
+	if (Entering) 
+	{
 		if (scale.x >= 0.1)
+		{
 			setScale(scale.x - 0.03, scale.x - 0.03);
-		else {
-			setScale(0.03, 0.03);
+			if (startedEntering)
+				startedEntering = false;
+			else
+				state = Event::None;
+		}
+		else
+		{
+			setScale(0.00, 0.00);
 			Entering = false;
-			Visible = false;
 			Leaving = true;
-			// propagacja i chuj i czesc
+			
+			if (propagateObject->Propagate())
+				state = Event::CorrectPropagation;
+
+			else state = Event::IncorrectPropagation;
+
+			attachToTrack(propagateObject->OutputTrack());
 		}
 	}
-	else if (Leaving) {
+	else if (Leaving) 
+	{
 		if (scale.x < 1.0)
 		{
-			setScale(scale.x + 0.02, scale.x + 0.02);
-			if (scale.x > 0.1)
-				Visible = true;
+			setScale(scale.x + 0.03, scale.x + 0.03);
+			state = Event::None;
 		}
-		else {
+		else 
+		{
 			setScale(1.0, 1.0);
 			Leaving = false;
+			state = Event::ElemLeft;
 		}
 	}
 	return false;
 }
 
-bool & Bit::hasMoved()
+bool Bit::hasMoved()
 {
 	return Moved;
 }
 
-bool & Bit::isLocked()
+bool Bit::isLocked()
 {
 	return Locked;
 }
 
-bool & Bit::isEntering()
+bool Bit::isEntering()
 {
 	return Entering;
 }
 
-bool & Bit::isLeaving()
+bool Bit::isLeaving()
 {
 	return Leaving;
 }
 
-bool & Bit::isCollecting()
+bool Bit::isCollecting()
 {
 	return Collecting;
 }
 
-bool & Bit::Value()
+bool Bit::Value()
 {
 	return value;
 }
@@ -102,14 +121,28 @@ bool & Bit::Value()
 void Bit::changeValue()
 {
 	value = !value;
+	currTrack->setValue(value);
 }
 
 void Bit::EnterLogicElem(LogicElem * object)
 {
 	propagateObject = object;
 	Entering = true;
+	startedEntering = true;
+	state = ElemEntered;
 }
 
+
+
+void Track::Cut(Track * track)
+{
+	track->end = true;
+}
+
+Track * Track::startNewTrack(int height, int level, bool mod, bool value)
+{
+	return new Track(height, mod, value, 1100);
+}
 
 bool Track::getValue(void) const
 {
@@ -157,6 +190,10 @@ void Track::Update(float offset)
 	}
 	else
 		dims.b_left -= offset;
+	if (val)
+		sprite.setColor(Color::Red);
+	else
+		sprite.setColor(Color::Yellow);
 
 	sprite.setTextureRect(IntRect(0, 0, dims.b_right - dims.b_left, trackHeight));
 	sprite.move(-offset, 0);
@@ -170,11 +207,6 @@ void Track::setValue(const bool & value)
 bool Track::toDelete()
 {
 	return dims.b_right < 0;
-}
-
-void Track::Cut()
-{
-	end = true;
 }
 
 void LevelManager::ReadLevel(int levelNumber)
