@@ -1,67 +1,41 @@
 #pragma once
-#include "SFML\Graphics.hpp"
-#include "Utilities.h"
+#include <SFML\Graphics.hpp>
 #include <list>
-
+#include <string>
 using namespace sf;
+using namespace std;
 class Menu
 {
-	//> window where menu context is rendered
-	sf::RenderWindow *window;
+	RenderWindow * window;
+	Font * fontPointer;
+	list<Text *> textVector;
+	Color hoverColor;
+	Color defaultColor;
 
-	//> color RGB for normal rendering
-	sf::Color normalview;
+	Event events;
 
-	//> color RGB to show mouse hovering
-	sf::Color hoverview;
+	bool clicked;
 
-
-	//> borders of menu elements
-	sf::IntRect _oprt_size;
-
-	//> number of current option
-	int current;
-
-	//> total options number
-	int _opts;
-
-	//> options list
-	std::list<Text> opts;
-
-	//> pointer to font
-	Font *f;
-
-	//> Background to be rendered while polling menu
-	sf::RectangleShape title;
-
+	int optionUpdate();
 public:
-	//> default constructor
-	Menu(sf::RenderWindow *render, Font *fp);
+	Menu()
+	{
+	}
 
-	//> adds new option
-	//> /a name - text representing option on the screen
-	//> /a font - loaded option font
-	void AddNewOption(std::string path);
+	Menu(RenderWindow * renderTarget, Font * font);
 
-	//> Sets operational height and width of menu
-	//> Elements of menu cannot cross given borders of width and height
-	//> By default width and height is set to 800 and 600
-	void SetBounds(int xpos, int ypos, int w, int h);
+	static enum Colours{Hover = 0x01, Default = 0x02};
 
-	//> Sets colors of normal and hovering view
-	//> if given colours are exactly the same, menu is not modyfying textures
-	void SetColors(sf::Color ncolor, sf::Color hcolor);
-
-	//> Sets background of the menu
-	void SetBackground(std::string path);
-	void SetBackground(sf::Texture *t);
-	//> Updates the menu on every frame
-	//> Switches between options, changes colors and control menu events
-	//> Returns number of option choosen by clicking LMB or pressing Enter
-	int Update(sf::Event &ev);
-
-	//> Draws menu content on the screen
+	void setFont(Font * font);
+	void addOption(string newOption);
+	
+	void setColor(Color color, Colours flag);
+	
+	int pollMenu();
 	void Draw();
-
-	~Menu();
+	~Menu()
+	{
+		for (auto elem : textVector)
+			delete elem;
+	}
 };

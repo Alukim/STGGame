@@ -6,11 +6,45 @@
 class Game
 {
 private:
-	inline void MoveUp();
-	
-	inline void MoveDown();
 
-	inline void Update();
+	const int FPS = 300;
+	const int UPS = 1000 / 120;
+	RenderWindow * Window;
+	Font * bellfort;
+	Event events;
+
+	Texture AND2Texture;
+	Texture BitTexture;
+
+	RectangleShape fader;
+	//game-logic vars
+	float offset;						//> how fast the map moves
+
+	Bit *bit;							//> bit
+
+	std::vector<Sprite *> elems;		//> logic elems + bonuses
+
+	std::list<Track *> trackMap[8];		//> tracks
+
+	bool moveUp, moveDown;
+	int FadetoBlack;
+	// GUI elements
+	
+	Score *Points;						//> Scoring feature
+
+	Battery *volts;						//> volt load
+
+	Battery *amps;						//> amper load
+
+	Clock updateTimer;
+
+	long long int pixelCounter = 0;
+
+	int levelHeights[TRACK_AMOUNT] = { 250, 295, 340, 385, 430, 475, 520, 565 };
+
+private:
+
+	inline bool Update();
 
 	inline void IncrementPixelCounter();
 
@@ -20,60 +54,10 @@ private:
 
 	void AddBonus(Sprite * newBonus);
 
-	// Graphic vars
-	const int FPS = 300;
-	const int UPS = 1000 / 120;
-	RenderWindow * Window;
-	Event events;
-	Font Font;
-	bool Fail;
-	
-	Texture AND2Texture;
-	Texture BitTexture;
-
-	//game-logic vars
-	float offset;							//> how fast the map moves
-	
-	long long int counter;					//> counts how many pixels the player reached
-	
-	int bit_level;							//> track that the bit is on
-	
-	int prev_bit_level;
-	
-
-	bool movedUp = false;
-
-	bool movedDown = false;
-
-	
-	Bit *bit;							//> bit
-	
-	std::vector<Sprite *> elems;	//> logic elems + bonuses
-	
-	std::list<Track *> trackMap[8];		//> tracks
-	
-	int levelHeights[TRACK_AMOUNT]= { 250, 295, 340, 385, 430, 475, 520, 565};
-								
-	// GUI elements
-	Score *Points;						//> Scoring feature
-	
-	Battery *volts;						//> volt load
-	
-	Battery *amps;						//> amper load
-
-	
-	
-	Clock updateTimer;					
-	
-	long long int pixelCounter = 0;
-	
-	int cont=0;
-
-	Clock tim;
 public:
 
-	Game();
+	Game(RenderWindow * renderTarget, Font * font);
 
 	void Play();
-	
+
 };

@@ -8,12 +8,15 @@ Bit::Bit(Texture &text) : Sprite(text)
 {
 	FloatRect rect = getLocalBounds();
 	setOrigin(Vector2f(rect.width / 2, rect.height / 2));
-	Locked = false;
-	Moved = false;
 	Entering = false;
 	Leaving = false;
 	value = true;
 	startedEntering = false;
+	prevTrack = nullptr;
+	currTrack = nullptr;
+	propagateObject = nullptr;
+
+	propagateTime = 0;
 	state = Event::None;
 }
 
@@ -23,19 +26,18 @@ void Bit::setHeight(const int level)
 	setPosition(vec.x, level);
 }
 
-void Bit::getBack()
-{
-	currentHeight = previousHeight;
-	FloatRect bitRect = getGlobalBounds();
-	setPosition(bitRect.left, previousHeight);
-}
-
 void Bit::attachToTrack(Track * track)
 {
+	prevTrack = currTrack;
 	currTrack = track;
-	Vector2f temp = getPosition();
-	setPosition(temp.x, track->level);
-	track->setValue(this->value);
+	setPosition(getPosition().x, track->height);
+	track->setValue(value);
+}
+
+void Bit::getBack()
+{
+	currTrack = prevTrack;
+	setPosition(getPosition().x, currTrack->level);
 }
 
 
@@ -43,69 +45,55 @@ int Bit::Update()
 {
 	if (value)
 		setColor(Color::Red);
-	else 
+	else
 		setColor(Color::Blue);
-	
+
 	Vector2f scale = getScale();
-	if (Entering) 
+	if (Entering)
 	{
-		if (scale.x >= 0.1)
+		if (scale.x > 0.00)
 		{
-			setScale(scale.x - 0.03, scale.x - 0.03);
+			setScale(scale.x - 0.02, scale.x - 0.02);
 			if (startedEntering)
 				startedEntering = false;
 			else
 				state = Event::None;
 		}
-		else
+		else if (++propagateTime > 50)
 		{
-			setScale(0.00, 0.00);
 			Entering = false;
 			Leaving = true;
-			
+
+			setScale(0.00, 0.00);
+
 			if (propagateObject->Propagate())
 				state = Event::CorrectPropagation;
 
 			else state = Event::IncorrectPropagation;
 
 			attachToTrack(propagateObject->OutputTrack());
+
 		}
 	}
-	else if (Leaving) 
+	else if (Leaving)
 	{
 		if (scale.x < 1.0)
 		{
-			setScale(scale.x + 0.03, scale.x + 0.03);
+			setScale(scale.x + 0.015, scale.x + 0.015);
 			state = Event::None;
 		}
-		else 
+		else
 		{
 			setScale(1.0, 1.0);
 			Leaving = false;
 			state = Event::ElemLeft;
 		}
 	}
-	return false;
+	return state;
 }
-
-bool Bit::hasMoved()
-{
-	return Moved;
-}
-
 bool Bit::isLocked()
 {
-	return Locked;
-}
-
-bool Bit::isEntering()
-{
-	return Entering;
-}
-
-bool Bit::isLeaving()
-{
-	return Leaving;
+	return Entering || Leaving;
 }
 
 bool Bit::isCollecting()
@@ -116,6 +104,11 @@ bool Bit::isCollecting()
 bool Bit::Value()
 {
 	return value;
+}
+
+int Bit::getTrackIndex()
+{
+	return currTrack->level;
 }
 
 void Bit::changeValue()
@@ -137,11 +130,12 @@ void Bit::EnterLogicElem(LogicElem * object)
 void Track::Cut(Track * track)
 {
 	track->end = true;
+	track->dims.b_right = 1100;
 }
 
 Track * Track::startNewTrack(int height, int level, bool mod, bool value)
 {
-	return new Track(height, mod, value, 1100);
+	return new Track(height, level, mod, value, 1100);
 }
 
 bool Track::getValue(void) const
@@ -149,17 +143,19 @@ bool Track::getValue(void) const
 	return val;
 }
 
-Track::Track(int lvl, bool alter, bool value, int border_left)
+Track::Track(int height, int lvl, bool alter, bool value, int border_left)
 {
 	dims.b_left = border_left;
 	dims.b_right = window->getSize().x + 50;
+	this->height = height;
 	mod = alter;
 	val = value;
+
 	level = lvl;
 	sprite.setTexture(*texture);
 	sprite.setTextureRect(IntRect(0, 0, dims.b_left - dims.b_right, trackHeight));
 	sprite.setOrigin(0, trackHeight / 2);
-	sprite.setPosition((float)border_left, level);
+	sprite.setPosition((float)border_left, height);
 }
 
 void Track::SetTexture(std::string & path)

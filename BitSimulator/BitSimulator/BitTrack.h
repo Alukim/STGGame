@@ -27,23 +27,26 @@ struct track_dim
 class Track
 {
 	bool mod;
+
 	bool val;
 
 	bool end = false;
 	
 	static Texture *texture;
+	
 	static RenderWindow * window;
 	
 public:
 	
 	static int trackHeight;
+
+	int height;
+
 	int level;
+
+public:
 	
-	Track(int level, bool mod, bool value, int border_left);
-	
-	static void Cut(Track * track);
-	
-	static Track * startNewTrack(int height, int level, bool mod, bool value);
+	Track(int height, int level, bool mod, bool value, int border_left);
 	
 	bool getValue(void) const;
 
@@ -51,7 +54,9 @@ public:
 	
 	track_dim dims;
 
+	static void Cut(Track * track);
 	
+	static Track * startNewTrack(int height, int level, bool mod, bool value);
 	
 	static void SetTexture(std::string & path);
 
@@ -70,19 +75,24 @@ public:
 class Bit : public Sprite
 {
 	int state;
-	Clock timer;
-	const int Tick = 20;
-	int previousHeight;
-	int currentHeight;
+	
 	bool startedEntering;
+	
 	bool value;
-	bool Moved;
-	bool Locked;
+	
 	bool Entering;
+	
 	bool Leaving;
+	
 	bool Collecting;
+	
 	LogicElem * propagateObject;
+	
 	Track * currTrack;
+
+	Track * prevTrack;
+
+	int propagateTime;
 
 public:
 	
@@ -100,27 +110,23 @@ public:
 
 	void setHeight(const int level);
 
-	void getBack();
-
 	int Update();
 
-	bool hasMoved();
-
 	bool isLocked();
-
-	bool isEntering();
-
-	bool isLeaving();
 
 	bool isCollecting();
 
 	bool Value();
+
+	int getTrackIndex();
 	
 	void changeValue(); 
 	
 	void EnterLogicElem(LogicElem * object);
 	
 	void attachToTrack(Track * track);
+
+	void getBack();
 };
 
 

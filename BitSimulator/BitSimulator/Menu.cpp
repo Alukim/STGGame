@@ -1,112 +1,103 @@
 #include "Menu.h"
-Menu::Menu(sf::RenderWindow *render, Font *fp)
-{
-	window = render;
-	f = fp;
-	current = 0;
-	_opts = 0;
-	_oprt_size.left = 0;
-	_oprt_size.top = 0;
-	_oprt_size.width = render->getSize().x;
-	_oprt_size.height = render->getSize().y;
-}
 
-void Menu::AddNewOption(std::string n)
+void Menu::addOption(string newOption)
 {
-	Text temp(String(n), *f, 100);
-	temp.setColor(normalview);
-	opts.push_back(temp);
-	_opts++;
-	int i = 0;
-	std::list<Text>::iterator titer = opts.begin();
-	for (titer; titer != opts.end(); titer++)
+	String temp(newOption);
+	Text * newText = new Text(temp, *fontPointer, 40);
+
+	textVector.push_back(newText);
+
+	FloatRect textRect = newText->getGlobalBounds();
+	Vector2u windowSize = window->getSize();
+	newText->setPosition(windowSize.x - (textRect.width+10), 0);
+
+	int border = windowSize.y - 10;
+	for (auto it = textVector.rbegin(); it != textVector.rend(); it++)
 	{
-		FloatRect frtemp = titer->getGlobalBounds();
-		titer->setPosition(sf::Vector2f((_oprt_size.width - frtemp.width) / 2, _oprt_size.height * i / _opts));
-		i++;
+		textRect = (*it)->getGlobalBounds();
+		(*it)->setPosition(textRect.left, border - textRect.height);
+		border -= (textRect.height + 10);
 	}
 }
 
-void Menu::SetBounds(int xpos, int ypos, int w, int h)
+void Menu::setFont(Font * font)
 {
-	_oprt_size.left = xpos;
-	_oprt_size.top = ypos;
-	_oprt_size.width = w;
-	_oprt_size.height = h;
+	fontPointer = font;
+	hoverColor = Color::Red;
+	defaultColor = Color::White;
 }
 
-
-void Menu::SetColors(sf::Color ncolor, sf::Color hcolor)
+Menu::Menu(RenderWindow * renderTarget, Font * font)
 {
-	hoverview = hcolor;
-	normalview = ncolor;
+	window = renderTarget;
+	fontPointer = font;
+	hoverColor = Color::Red;
+	defaultColor = Color::White;
 }
 
-int Menu::Update(sf::Event &ev)
+int Menu::pollMenu()
 {
-	int i = 0;
-	std::list<Text>::iterator titer = opts.begin();
-	if (normalview == hoverview)
+	int result = 0;
+	while (window->isOpen())
 	{
-		for (titer; titer != opts.end(); titer++)
-			titer->setColor(normalview);
-		titer->setColor(hoverview);
-	}
-	titer = opts.begin();
-	if (ev.type == sf::Event::KeyPressed)
-	{
-		if (ev.key.code == sf::Keyboard::Up)
+		while (window->pollEvent(events))
 		{
-			if (current > 0)
-				current--;
-		}
-		else if (ev.key.code == sf::Keyboard::Down)
-		{
-			if (current < _opts - 1)
-				current++;
+			if (events.type == Event::Closed)
+				window->close();
 
+			else if (events.type == Event::MouseButtonPressed && events.mouseButton.button == Mouse::Left)
+				clicked = true;
 		}
-		else if (ev.key.code == sf::Keyboard::Return)
-			return current;
+
+		result = optionUpdate();
+
+		if (result != -1)
+			return result;
+		Draw();
 	}
-	else if (ev.type == sf::Event::MouseMoved)
+	return -1;
+}
+
+
+void Menu::setColor(Color color, Colours flag)
+{
+	if (flag & Colours::Hover)
+		hoverColor = color;
+
+	if (flag & Colours::Default)
+		defaultColor = color;
+}
+int Menu::optionUpdate()
+{
+	int optionIndex = 0;
+	FloatRect textRect;
+	Vector2f mousePos;
+
+	for (auto text : textVector)
 	{
-		for (titer; titer != opts.end(); titer++)
+		textRect = text->getGlobalBounds();
+		mousePos = Vector2f(Mouse::getPosition(*window).x, Mouse::getPosition(*window).y);
+		if (textRect.contains(mousePos))
 		{
-			sf::Vector2i mouse = sf::Mouse::getPosition(*window);
-			sf::FloatRect fl = titer->getGlobalBounds();
-			titer->setColor(normalview);
-
-			if (Intersect(fl, mouse)) // if mouse hovers on an option
-				current = i; // set new hovered option
-
-			i++;
+			if (clicked)
+				return optionIndex;
+			else
+				text->setColor(hoverColor);
 		}
-	}
-	else if (ev.type == sf::Event::MouseButtonPressed)
-	{
-		if (ev.mouseButton.button == sf::Mouse::Left)
-			return current;
+		else
+			text->setColor(defaultColor);
+
+		++optionIndex;
 	}
 	return -1;
 }
 
 void Menu::Draw()
 {
-	int i = 0;
-	std::list<Text>::iterator titer = opts.begin();
-	for (titer; titer != opts.end(); titer++)
+	window->clear();
+	for (auto text : textVector)
 	{
-		if (i != current)
-			titer->setColor(normalview);
-		else
-			titer->setColor(hoverview);
-
-		window->draw(*titer);
-		i++;
+		window->draw(*text);
 	}
-}
-Menu::~Menu()
-{
-	opts.clear();
+	window->display();
 }

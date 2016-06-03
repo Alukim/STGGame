@@ -62,11 +62,8 @@ public:
 template<int inputs>
 inline bool NORGate<inputs>::Propagate(void)
 {
-	for (int i = 0; i < inputs_count; i++)
-	{
+	for (unsigned i = 0; i < inputs_count; ++i)
 		if (inputPointers[i]->getValue()) { std::cout << "Propagation on gate: FALSE"; return false; }
-	}
-	std::cout << "Propagation on gate: TRUE";
 	return true;
 }
 
@@ -94,11 +91,8 @@ public:
 template<int inputs>
 inline bool NANDGate<inputs>::Propagate(void)
 {
-	for (int i = 0; i < inputs; i++)
-	{
+	for (unsigned i = 0; i < inputs; ++i)
 		if (!inputPointers[i]->getValue()) { std::cout << "Propagation on gate: TRUE"; return true; }
-	}
-	std::cout << "Propagation on gate: FALSE";
 	return false;
 }
 typedef NANDGate<2> NAND2;
@@ -124,12 +118,9 @@ inline bool XORGate<inputs>::Propagate(void)
 {
 	std::cout << "Hello, this code better should work" << std::endl;
 	bool result = false;
-	for (int i = 0; i < inputs_count; i++)
-	{
+	for (unsigned i = 0; i < inputs_count; ++i)
 		if (inputPointers[i]->getValue()) result = !result;
 
-	}
-	std::cout << "Propagation on gate: " << result << std::endl;
 	return result;
 }
 
@@ -161,10 +152,8 @@ typedef ORGate<3> OR3;
 template<int inputs>
 inline bool ORGate<inputs>::Propagate(void)
 {
-	for (int i = 0; i < inputs_count; i++)
-	{
+	for (unsigned i = 0; i < inputs_count; ++i)
 		if (inputPointers[i]->getValue()) return true;
-	}
 
 	return false;
 }
@@ -191,10 +180,8 @@ typedef ANDGate<3> AND3;
 template<int inputs>
 inline bool ANDGate<inputs>::Propagate(void)
 {
-	for (int i = 0; i < inputs_count; i++)
-	{
+	for (unsigned i = 0; i < inputs_count; ++i)
 		if (!inputPointers[i]->getValue()) return false;
-	}
 	return true;
 }
 
