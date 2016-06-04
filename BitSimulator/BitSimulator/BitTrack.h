@@ -114,8 +114,6 @@ public:
 
 	bool isLocked();
 
-	bool isCollecting();
-
 	bool Value();
 
 	int getTrackIndex();

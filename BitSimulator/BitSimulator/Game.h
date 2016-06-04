@@ -13,28 +13,33 @@ private:
 	Font * bellfort;
 	Event events;
 
-	Texture AND2Texture;
-	Texture BitTexture;
-
-	RectangleShape fader;
+	RectangleShape fader;				// game-over screen effect
+	
 	//game-logic vars
 	float offset;						//> how fast the map moves
 
 	Bit *bit;							//> bit
 
-	std::vector<Sprite *> elems;		//> logic elems + bonuses
+	vector<Sprite *> elems;		//> logic elems + bonuses
 
-	std::list<Track *> trackMap[8];		//> tracks
+	list<Track *> trackMap[8];		//> tracks
 
 	bool moveUp, moveDown;
+	bool collect;
 	int FadetoBlack;
+
+
 	// GUI elements
-	
 	Score *Points;						//> Scoring feature
 
 	Battery *volts;						//> volt load
 
 	Battery *amps;						//> amper load
+
+	Texture AND2Texture;
+	Texture BitTexture;
+	Texture VoltBonusTexture;
+	Texture AmperBonusTexture;
 
 	Clock updateTimer;
 
@@ -52,7 +57,7 @@ private:
 
 	void AddLogicElem(LogicElem * newObject, int trackNumber, int inputCount);
 
-	void AddBonus(Sprite * newBonus);
+	void AddBonus(Sprite * newBonus, unsigned int trackNumber);
 
 public:
 
@@ -61,3 +66,5 @@ public:
 	void Play();
 
 };
+
+double coverPercentage(FloatRect &elem1, FloatRect &elem2);

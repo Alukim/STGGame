@@ -96,11 +96,6 @@ bool Bit::isLocked()
 	return Entering || Leaving;
 }
 
-bool Bit::isCollecting()
-{
-	return Collecting;
-}
-
 bool Bit::Value()
 {
 	return value;

@@ -11,6 +11,8 @@ Game::Game(RenderWindow * renderTarget, Font * font)
 
 	Track::SetTexture(txtpath + "track.png");
 	Track::SetWindowPointer(Window);
+
+	// creating tracks
 	trackMap[0].push_back(new Track(levelHeights[0], 0, true, false, 0));
 	trackMap[1].push_back(new Track(levelHeights[1], 1, true, false, 0));
 	trackMap[2].push_back(new Track(levelHeights[2], 2, true, false, 0));
@@ -24,9 +26,15 @@ Game::Game(RenderWindow * renderTarget, Font * font)
 	temp.loadFromFile(txtpath + "Gates/And2.png");
 	temp.createMaskFromColor(Color(255, 0, 255));
 	AND2Texture.loadFromImage(temp);
+
+	temp.loadFromFile(txtpath + "VBonus.png");
+	temp.createMaskFromColor(Color(255, 0, 255));
+	VoltBonusTexture.loadFromImage(temp);
+
 	AddLogicElem(new AND2(AND2Texture), 2, 2);
 	AddLogicElem(new AND2(AND2Texture), 5, 2);
 
+	AddBonus(new Volt(VoltBonusTexture, 500), 1);
 	temp.loadFromFile(txtpath + "bit.png");
 	temp.createMaskFromColor(Color(255, 0, 255));
 
@@ -37,7 +45,7 @@ Game::Game(RenderWindow * renderTarget, Font * font)
 	bit->attachToTrack(trackMap[3].front());
 	offset = 1.6;
 
-	moveUp = moveDown = false;
+	moveUp = moveDown = collect = false;
 	FadetoBlack = 0;
 	fader.setSize(Vector2f(1024, 768));
 	fader.setFillColor(Color(0, 0, 0, 0));
@@ -49,32 +57,46 @@ void Game::Play()
 	{
 		while (Window->pollEvent(events))
 		{
-			if (events.type == Event::KeyPressed &&
-				(events.key.code == Keyboard::Up || events.key.code == Keyboard::W))
-				moveUp = !(moveDown = false);
-
-			else if (events.type == Event::KeyPressed &&
-				(events.key.code == Keyboard::Down || events.key.code == Keyboard::S))
-				moveDown = !(moveUp = false);
-
-			else if (events.type == Event::KeyPressed
-				&& events.key.code == Keyboard::Space) {
-				bit->changeValue();
-			}
-			else if (events.type == Event::KeyPressed
-				&& events.key.code == Keyboard::LControl) {
-			}
-			else if (events.type == Event::KeyReleased
-				&& events.key.code == Keyboard::LControl) {
-			}
-			else if (events.type == Event::KeyPressed && events.key.code == Keyboard::Right) 
-				offset = 3.5;
-
-			else if (events.type == Event::KeyReleased && events.key.code == Keyboard::Right)
-				offset = 2.0;
-
-			else if (events.type == Event::Closed)
+			switch (events.type)
+			{
+			case Event::KeyPressed:
+				switch (events.key.code)
+				{
+				case Keyboard::Up:
+				case Keyboard::W:
+					moveUp = !(moveDown = false);
+					break;
+				case Keyboard::Down:
+				case Keyboard::S:
+					moveDown = !(moveUp = false);
+					break;
+				case Keyboard::Space:
+					bit->changeValue();
+					break;
+				case Keyboard::LControl:
+					collect = true;
+					break;
+				case Keyboard::Right:
+				case Keyboard::D:
+					offset = 3.5;
+					break;
+				}
+				break;
+			case Event::KeyReleased:
+				switch (events.key.code)
+				{
+				case Keyboard::Right:
+					offset = 2.0;
+					break;
+				case Keyboard::LControl:
+					collect = false;
+					break;
+				}
+				break;
+			case Event::Closed:
 				Window->close();
+				break;
+			}
 		}
 		if (Update())
 			return;
@@ -151,31 +173,41 @@ inline bool Game::Update()
 		{
 			elem->move(-offset, 0);
 			FloatRect elemRect = elem->getGlobalBounds();
-			if (bitRect.intersects(elemRect))
+			if (bitRect.intersects(elemRect))		 // if there is a collision (bit with logic elem)
 			{
-				// if elem is LogicElem type (gate element)
-				if (LogicElem * pointer = dynamic_cast<LogicElem *>(elem))
+				if (LogicElem * pointer = dynamic_cast<LogicElem *>(elem))	// if elem is LogicElem type (gate element)
 				{
-					if (!bit->isLocked())
+					if (!bit->isLocked())			// if bit is entering or leaving another element (pragmatic if)
 					{
-						// if bit changed track
-						if (moveUp || moveDown)
+						if (moveUp || moveDown)		// if bit changed track
 							bit->getBack();
-						// bit is free and can get into to logic elem
-						else
+						else						// bit is free and can get into the logic elem
 							bit->EnterLogicElem(pointer);
 					}
 				}
-				// if elem is Volt or Amper type (Bonus element)
-				else
+
+				else	// if elem is Volt or Amper type (Bonus element)
 				{
-					Volt * voltPointer = dynamic_cast<Volt *>(elem);
-					if (voltPointer)
+					if (collect)	// if bit is collecting (CTRL pressed) then check on collisions
 					{
-						Points->Add(voltPointer->GetBonus());
-						volts->Load(voltPointer->GetBonus());
+						Volt * voltPointer = dynamic_cast<Volt *>(elem);
+						Amper * amperPointer = dynamic_cast<Amper *>(elem);
+						if (voltPointer)
+						{
+							if (voltPointer->isVisible())
+							{
+								double coefficient = coverPercentage(voltPointer->getGlobalBounds(), bitRect);
+								Points->Add(coefficient * voltPointer->GetBonus());
+								volts->Load(voltPointer->GetBonus());
+								Volt::CollectVoltBonus(voltPointer);
+							}
+						}
+						else if (amperPointer)
+						{
+
+						}
+						collect = false; // stop collecting
 					}
-					// else - dodaj do baterii Amperów
 				}
 			}
 		}
@@ -186,9 +218,9 @@ inline bool Game::Update()
 				track->Update(offset);
 		}
 		moveUp = moveDown = false;
-		
-		
-		if (FadetoBlack > 255) return true;	
+
+
+		if (FadetoBlack > 255) return true;
 		else if (FadetoBlack > 0)
 		{
 			++FadetoBlack;
@@ -247,7 +279,38 @@ void Game::AddLogicElem(LogicElem * newObject, int trackNumber, int inputCount)
 	}
 }
 
+void Game::AddBonus(Sprite * newBonus, unsigned int trackNumber)
+{
+	newBonus->setPosition(1024, levelHeights[trackNumber] - Track::trackHeight / 2);
+	elems.push_back(newBonus);
+}
 
 
+double coverPercentage(FloatRect &elem1, FloatRect &elem2)
+{
+	double area1 = 0.0, area2 = 0.0;
+	area1 = elem1.width * elem1.height;
+	area2 = elem2.width * elem2.height;
 
+	double x = 0.0, y = 0.0;
+	double area3 = 0.0;
+
+	if (elem1.left > elem2.left)
+		x = elem2.left + elem2.width - elem1.left;
+	else
+		x = elem1.left + elem1.width - elem2.left;
+
+	if (elem1.top > elem2.top)
+		y = elem2.top + elem2.height - elem1.top;
+	else
+		y = elem1.top + elem1.height - elem2.top;
+
+	if (x < 0 || y < 0)
+		return 0.0;
+	else
+	{
+		area3 = x * y;
+		return (area3 / area1);
+	}
+}
 

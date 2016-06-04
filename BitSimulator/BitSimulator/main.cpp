@@ -96,8 +96,11 @@ int main(int argc, char **argv)
 			}
 			break;
 		case AppStates::Play:
+			game->Play();
+			state = AppStates::EndGameScreen;
 			break;
 		case AppStates::EndGameScreen:
+			runApp = false;
 			break;
 		case AppStates::Highscores:
 			break;
@@ -105,5 +108,8 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
+	delete mainMenu;
+	delete game;
+	delete lvlPicker;
 	return EXIT_SUCCESS;
 }
