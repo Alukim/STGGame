@@ -49,27 +49,34 @@ void Battery::Refactor()
 	int href = (int)((1 - res) * dim.y);
 
 	// colouring loops
-	if (href != prevheight) {
-		if (href > prevheight) {
-			for (int posx = 0; posx < dim.x; posx++) {
+	if (href != prevheight) 
+	{
+		if (href > prevheight)
+		{
+			for (int posx = 0; posx < dim.x; posx++) 
+			{
 
 				// gets pixel from (posx, posy) position and colours it to the transparent one
-				for (int posy = prevheight; posy < href; posy++) {
+				for (int posy = prevheight; posy < href; posy++)
+				{
 					prob = batimg.getPixel(posx, posy);
 					if (prob != sf::Color::Black && prob != sf::Color(210, 154, 46))
 						batimg.setPixel(posx, posy, sf::Color::Transparent);
 				}
 			}
 		}
-		else {
+		else 
+		{
 			int end;
 			// if colour has changed, whole colour section needs to be redrawn
 			if (prev_col != fill) end = dim.y;
 			else	end = prevheight;
 
-			for (int posx = 0; posx < dim.x; posx++) {
+			for (int posx = 0; posx < dim.x; posx++) 
+			{
 				// gets pixel from (posx, posy) position and colours it to the fill colour one
-				for (int posy = href; posy < end; posy++) {
+				for (int posy = href; posy < end; posy++)
+				{
 					prob = batimg.getPixel(posx, posy);
 					if (prob != sf::Color::Black && prob != sf::Color(210, 154,46))
 						batimg.setPixel(posx, posy, fill);
