@@ -40,6 +40,12 @@ int main(int argc, char **argv)
 		runApp = false;
 	}
 
+	Image * title = new Image();
+	if (!title->loadFromFile(txtpath + "title.png"))
+	{
+		Error("Couldn't load title image.");
+		runApp = false;
+	}
 	vector<Music*> musicList;
 
 	for (int i = 0; i < 8; ++i)
@@ -78,6 +84,7 @@ int main(int argc, char **argv)
 	{
 		MessageBox(NULL, e.what(), "Error occured!", MB_ICONERROR | MB_OK);
 	}
+	mainMenu->addImage(title);
 	mainMenu->addOption("New Game");
 	mainMenu->addOption("Highscores");
 	mainMenu->addOption("Authors");
@@ -93,12 +100,12 @@ int main(int argc, char **argv)
 	Authors->addOption("Back to menu             ");
 	Authors->addText("Authors:", 120);
 	Authors->addText(" ", 120);
-	Authors->addText(" ", 120);
 	Authors->addText("Aleksander Krawiec", 70);
 	Authors->addText("Bartosz Kowalski", 70);
 
-	int numberofmusic = (rand() % 7) + 1;
+	int numberofmusic = (rand() % 8) + 1;
 	musicList[numberofmusic]->setVolume(30);
+	musicList[numberofmusic]->setLoop(true);
 	musicList[numberofmusic]->play();
 
 	int levelPicked = 0;

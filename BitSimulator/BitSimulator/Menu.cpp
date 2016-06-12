@@ -12,7 +12,7 @@ void Menu::addOption(string newOption)
 	newText->setPosition(windowSize.x - (textRect.width+10), 0);
 
 	int border = windowSize.y - 10;
-	for (auto it = textVector.rbegin(); it != textVector.rend(); it++)
+	for (auto it = textVector.rbegin(); it != textVector.rend(); ++it)
 	{
 		textRect = (*it)->getGlobalBounds();
 		(*it)->setPosition(textRect.left, border - textRect.height);
@@ -40,6 +40,21 @@ void Menu::addText(string newText, int size)
 	}
 }
 
+void Menu::addImage(Image* title)
+{
+	titleImage = new Image();
+	titleImage = title;
+	texture.loadFromImage(*title);
+	sprite = new Sprite();
+	sprite->setTexture(texture);
+
+	FloatRect spriteRect = sprite->getGlobalBounds();
+	Vector2u windowSize = window->getSize();
+
+	sprite->setPosition((windowSize.x / 2.0f) - (spriteRect.width / 2.0f), 100);
+
+}
+
 void Menu::changeText(string newtext)
 {
 	String temp(newtext);
@@ -47,7 +62,7 @@ void Menu::changeText(string newtext)
 
 	FloatRect textRect = text->getGlobalBounds();
 	Vector2u windowSize = window->getSize();
-	text->setPosition((windowSize.x / 2.0f) - (textRect.width / 2.0f), 0);
+	text->setPosition((windowSize.x / 2.0f) - (textRect.width / 2.0f), (windowSize.y / 2.0f) - (textRect.height/2.0f));
 
 	window->draw(*text);
 }
@@ -128,6 +143,10 @@ int Menu::optionUpdate()
 
 void Menu::Draw()
 {
+	if(titleImage != nullptr)
+	{
+		window->draw(*sprite);
+	}
 	window->draw(*background);
 	for (auto text : textVector)
 	{

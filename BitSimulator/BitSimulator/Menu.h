@@ -18,6 +18,10 @@ class Menu
 
 	bool clicked;
 
+	Image * titleImage = nullptr;
+	Texture texture;
+	Sprite * sprite;
+
 	Background * background;
 
 	int optionUpdate();
@@ -33,6 +37,7 @@ public:
 	void setFont(Font * font);
 	void addOption(string newOption);
 	void addText(string newText, int size);
+	void addImage(Image * title);
 	void changeText(string text);
 
 	void setColor(Color color, Colours flag);
@@ -48,5 +53,6 @@ public:
 			delete elem;
 
 		delete background;
+		delete sprite;
 	}
 };
