@@ -4,7 +4,6 @@
 #include <Windows.h>
 #include "Gates.h"
 #include "Game.h"
-#include "Utilities.h"
 #include "GUI.h"
 #include "Bonus.h"
 #include "BitTrack.h"
@@ -51,8 +50,6 @@ int main(int argc, char **argv)
 	}
 	mainMenu->addOption("New Game");
 	mainMenu->addOption("Highscores");
-	mainMenu->addOption("Authors");
-	mainMenu->addOption("Settings");
 	mainMenu->addOption("Exit");
 
 	lvlPicker->addOption("Level 1");
@@ -77,11 +74,7 @@ int main(int argc, char **argv)
 				break;
 			case 1: state = AppStates::Highscores;
 				break;
-			case 2: state = AppStates::AuthorScreen;
-				break;
-			case 3: state = AppStates::Settings;
-				break;
-			case 4: runApp = false;
+			case 2: runApp = false;
 				break;
 			}
 			break;
@@ -113,3 +106,10 @@ int main(int argc, char **argv)
 	delete lvlPicker;
 	return EXIT_SUCCESS;
 }
+
+
+// TO DO:
+// napisaæ level managera
+// napisaæ ranking
+// przepuœciæ przez leak detectora
+// zaladowac wszystkie brameczki

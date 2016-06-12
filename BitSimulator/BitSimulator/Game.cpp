@@ -7,7 +7,7 @@ Game::Game(RenderWindow * renderTarget, Font * font)
 
 	volts = new Battery(Window, 2500, 5000, txtpath + "bat1.png");
 	Points = new Score(Window, bellfort);
-
+	background = new Background();
 
 	Track::SetTexture(txtpath + "track.png");
 	Track::SetWindowPointer(Window);
@@ -34,7 +34,7 @@ Game::Game(RenderWindow * renderTarget, Font * font)
 	AddLogicElem(new AND2(AND2Texture), 2, 2);
 	AddLogicElem(new AND2(AND2Texture), 5, 2);
 
-	AddBonus(new Volt(VoltBonusTexture, 500), 1);
+	AddBonus(new Bonus(&VoltBonusTexture, 500), 1);
 	temp.loadFromFile(txtpath + "bit.png");
 	temp.createMaskFromColor(Color(255, 0, 255));
 
@@ -100,15 +100,46 @@ void Game::Play()
 		}
 		if (Update())
 			return;
-		Window->clear(Color::Blue);
+		background->Update();
+		Window->draw(*background);
 		Draw();
 		Window->display();
 	}
 }
 
+void Game::LoadLevel(std::string path)
+{
+	fstream file(path);
+	if (!file)
+		throw exception("Couldn't open game files. Try reinstalling the game");
+
+	ElemScript elem;
+	int type;
+	while (!file.eof())
+	{
+		file >> type;
+		switch (type)
+		{
+			//end level pixel get
+		case 0:
+			file >> elem.pixelCount;
+			elem.beginTrack = 0;
+			elem.bonus = 0;
+			elem.inputCount = 0;
+			break;
+			// bramka logiczna
+		case 1:
+			file >> elem.pixelCount;
+			file >> 
+			break;
+		}
+		elem.elemType = type;
+
+	}
+}
+
 inline bool Game::Update()
 {
-	// 1. sprawdz czy bit nie wpierdolil sie na element przy moveup/movedown
 	if (updateTimer.getElapsedTime().asMilliseconds() >= UPS)
 	{
 		updateTimer.restart();
@@ -132,7 +163,8 @@ inline bool Game::Update()
 				}
 			}
 			// if bit didn't change track
-			moveUp = false;
+			if (done == false)
+				moveUp = false;
 		}
 		else if (moveDown)
 		{
@@ -152,7 +184,8 @@ inline bool Game::Update()
 				}
 			}
 			//if bit didn't change track
-			moveDown = false;
+			if (done == false)
+				moveDown = false;
 		}
 		switch (bit->Update())
 		{
@@ -186,26 +219,15 @@ inline bool Game::Update()
 					}
 				}
 
-				else	// if elem is Volt or Amper type (Bonus element)
+				else	// if elem is Bonus element
 				{
+					Bonus * bonusPointer = dynamic_cast<Bonus *>(elem);
 					if (collect)	// if bit is collecting (CTRL pressed) then check on collisions
 					{
-						Volt * voltPointer = dynamic_cast<Volt *>(elem);
-						Amper * amperPointer = dynamic_cast<Amper *>(elem);
-						if (voltPointer)
-						{
-							if (voltPointer->isVisible())
-							{
-								double coefficient = coverPercentage(voltPointer->getGlobalBounds(), bitRect);
-								Points->Add(coefficient * voltPointer->GetBonus());
-								volts->Load(voltPointer->GetBonus());
-								Volt::CollectVoltBonus(voltPointer);
-							}
-						}
-						else if (amperPointer)
-						{
-
-						}
+						double coeff = coverPercentage(bonusPointer->getGlobalBounds(), bitRect);
+						Points->Add(coeff * bonusPointer->GetBonus());
+						volts->Load(bonusPointer->GetBonus());
+						Bonus::CollectBonus(bonusPointer);
 						collect = false; // stop collecting
 					}
 				}
@@ -226,6 +248,7 @@ inline bool Game::Update()
 			++FadetoBlack;
 			fader.setFillColor(Color(0, 0, 0, FadetoBlack));
 		}
+		volts->Dissipate(1);
 	}
 	return false;
 }

@@ -2,24 +2,26 @@
 #include <SFML\Graphics.hpp>
 #include <stdlib.h>
 
+using namespace sf;
+
+const std::string txtpath = "Resource/Textures/";
+const std::string mscpath = "Resource/Music/";
+const std::string fntpath = "Resource/Fonts/";
+
 // class used for drawing meters filled with spectrum's colors
 class Battery
 {
-	sf::RenderWindow *ref;	//> pointer to window battery will be drawn in
-	int diff;				//> var that indicates the difference between the actual buffer and drawn buffer
+	RenderWindow *renderTarget;	//> pointer to window battery will be drawn in
 
-	int load;				//> battery's load
-	int cap;				//> battery's capacity
-	int waver;				//> special counter to provide flashing when battery is full
-	int prevheight;			//> counter to determine the diff in colouring procces
-	bool change;			//> defines if sprite needs to be updated before drawing
+	int load;					//> battery's load
+	int cap;					//> battery's capacity
+	Vector2u batSize;
 
-	sf::Image batimg;		//> variable where battery's texture is updated
-	sf::Texture battxt;		//> battery's texture
-	sf::Sprite batsprite;	//>	battery's sprite
-	
-	
-	void Refactor();		//> update method
+
+	Texture texture;
+	Sprite batSprite;			//>	battery's sprite
+	RectangleShape filling;		//> battery's filling
+	Color fillColor;
 
 public:
 
@@ -42,7 +44,7 @@ public:
 	void Load(int load_inc);
 		
 	//> decrements load value by /a load_dnc
-	int Dissipate(int load_dnc);
+	void Dissipate(int load_dnc);
 		
 	//> Draws the sprite onto screen
 	void Draw();
@@ -67,33 +69,4 @@ public:
 	Score(sf::RenderWindow *window_context, sf::Font *font);
 	void Add(int inc);
 	void Draw();
-
-
 };
-class ParticleSystem : public sf::Drawable, public sf::Transformable
-{
-private:
-
-	struct Particle
-	{
-		sf::Vector2f velocity;
-		sf::Time lifetime;
-	};
-
-	std::vector<Particle> m_particles;
-	sf::VertexArray m_vertices;
-	sf::Time m_lifetime;
-	sf::Vector2f m_emitter;
-
-public:
-
-	ParticleSystem(unsigned int count);
-	void setEmitter(sf::Vector2f position);
-	void update(sf::Time elapsed);
-
-private:
-
-	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
-
-};
-

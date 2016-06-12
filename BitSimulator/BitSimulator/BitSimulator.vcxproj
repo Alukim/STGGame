@@ -124,33 +124,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Background.cpp" />
     <ClCompile Include="BitTrack.cpp" />
+    <ClCompile Include="Bonus.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gates.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Background.h" />
     <ClInclude Include="BitTrack.h" />
     <ClInclude Include="Bonus.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gates.h" />
     <ClInclude Include="GUI.h" />
-    <ClInclude Include="List.h" />
-    <ClInclude Include="Animation.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Rank.h" />
-    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\Textures\Baterry\bat.png" />
     <Image Include="Resource\Textures\Baterry\piorun2.png" />
     <Image Include="Resource\Textures\bit.png" />
     <Image Include="Resource\Textures\Gates\And.png" />
-    <Image Include="Resource\Textures\gwiazda.png" />
     <Image Include="Resource\Textures\track.png" />
   </ItemGroup>
   <ItemGroup>

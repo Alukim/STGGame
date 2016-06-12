@@ -33,6 +33,7 @@ Menu::Menu(RenderWindow * renderTarget, Font * font)
 	fontPointer = font;
 	hoverColor = Color::Red;
 	defaultColor = Color::White;
+	background = new Background();
 }
 
 int Menu::pollMenu()
@@ -50,7 +51,7 @@ int Menu::pollMenu()
 		}
 
 		result = optionUpdate();
-
+		background->Update();
 		if (result != -1)
 			return result;
 		Draw();
@@ -94,7 +95,7 @@ int Menu::optionUpdate()
 
 void Menu::Draw()
 {
-	window->clear();
+	window->draw(*background);
 	for (auto text : textVector)
 	{
 		window->draw(*text);

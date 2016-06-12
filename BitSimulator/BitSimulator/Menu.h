@@ -2,6 +2,7 @@
 #include <SFML\Graphics.hpp>
 #include <list>
 #include <string>
+#include "Background.h"
 using namespace sf;
 using namespace std;
 class Menu
@@ -15,6 +16,8 @@ class Menu
 	Event events;
 
 	bool clicked;
+
+	Background * background;
 
 	int optionUpdate();
 public:
@@ -37,5 +40,7 @@ public:
 	{
 		for (auto elem : textVector)
 			delete elem;
+
+		delete background;
 	}
 };

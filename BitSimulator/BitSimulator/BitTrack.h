@@ -3,19 +3,12 @@
 #include "Gates.h"
 #include "Bonus.h"
 #include "GUI.h"
-#include "Utilities.h"
 #include <list>
 #include <fstream>
 
 using namespace std;
 
-
-const std::string txtpath	 = "Resource/Textures/";
-const std::string mscpath	 = "Resource/Music/";
-const std::string fntpath	 = "Resource/Fonts/";
-
 class Bit;
-
 
 struct track_dim
 {
@@ -59,6 +52,8 @@ public:
 	static Track * startNewTrack(int height, int level, bool mod, bool value);
 	
 	static void SetTexture(std::string & path);
+
+	static void DestroyTexture();
 
 	static void SetWindowPointer(RenderWindow * render);
 
@@ -125,24 +120,8 @@ public:
 	void attachToTrack(Track * track);
 
 	void getBack();
-};
 
-
-struct ElemScript {
-	int startingPixel;
-	int elemType;
-	int inputAmount;
-};
-
-class LevelManager {
-private:
-	std::list <ElemScript> elems;
-public:
-	LevelManager()
+	~Bit()
 	{
 	}
-
-	void ReadLevel(int levelNumber);
-
-
 };

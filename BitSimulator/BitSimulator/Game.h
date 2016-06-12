@@ -2,7 +2,18 @@
 #include "SFML\Graphics.hpp"
 #include "BitTrack.h"
 #include "GUI.h"
+#include "Background.h"
 #define TRACK_AMOUNT 8
+
+struct ElemScript
+{
+	int elemType;
+	int pixelCount;
+	int beginTrack;
+	int gatetype;
+	int inputCount;
+	int bonus;
+};
 class Game
 {
 private:
@@ -12,9 +23,12 @@ private:
 	RenderWindow * Window;
 	Font * bellfort;
 	Event events;
+	Background * background;
 
 	RectangleShape fader;				// game-over screen effect
 	
+	list<ElemScript> levelMenager;
+
 	//game-logic vars
 	float offset;						//> how fast the map moves
 
@@ -36,7 +50,14 @@ private:
 
 	Battery *amps;						//> amper load
 
+
+	// textures
 	Texture AND2Texture;
+	Texture OR2Texture;
+	Texture NAND2Texture;
+	Texture NOR2Texture;
+	Texture XOR2Texture;
+	
 	Texture BitTexture;
 	Texture VoltBonusTexture;
 	Texture AmperBonusTexture;
@@ -65,6 +86,34 @@ public:
 
 	void Play();
 
+	void LoadLevel(std::string path);
+
+	~Game()
+	{
+		// deleting bit object
+		delete bit;
+
+		// deleting logic element vector
+		for (auto pointer : elems)
+		{
+			delete pointer;
+		}
+		elems.clear();
+
+		// deleting tracks
+		for (auto index : trackMap)
+		{
+			for (auto elem : index)
+			{
+				delete elem;
+			}
+			index.clear();
+		}
+		//
+		delete Points;
+		delete volts;
+		delete amps;
+	}
 };
 
 double coverPercentage(FloatRect &elem1, FloatRect &elem2);

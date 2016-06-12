@@ -12,9 +12,9 @@ Bit::Bit(Texture &text) : Sprite(text)
 	Leaving = false;
 	value = true;
 	startedEntering = false;
-	prevTrack = nullptr;
-	currTrack = nullptr;
-	propagateObject = nullptr;
+	prevTrack = NULL;
+	currTrack = NULL;
+	propagateObject = NULL;
 
 	propagateTime = 0;
 	state = Event::None;
@@ -37,7 +37,7 @@ void Bit::attachToTrack(Track * track)
 void Bit::getBack()
 {
 	currTrack = prevTrack;
-	setPosition(getPosition().x, currTrack->level);
+	setPosition(getPosition().x, currTrack->height);
 }
 
 
@@ -161,6 +161,11 @@ void Track::SetTexture(std::string & path)
 	trackHeight = texture->getSize().y;
 }
 
+void Track::DestroyTexture()
+{
+	delete texture;
+}
+
 void Track::SetWindowPointer(RenderWindow * render)
 {
 	window = render;
@@ -197,12 +202,5 @@ void Track::setValue(const bool & value)
 
 bool Track::toDelete()
 {
-	return dims.b_right < 0;
-}
-
-void LevelManager::ReadLevel(int levelNumber)
-{
-	string temp("Level");
-	temp += levelNumber;
-	temp = temp + ".txt";
+	return (dims.b_right < 0);
 }
