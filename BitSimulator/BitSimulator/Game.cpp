@@ -23,7 +23,7 @@ Game::Game(RenderWindow * renderTarget, Font * font)
 	trackMap[7].push_back(new Track(levelHeights[7], 7, true, false, 200));
 
 	Image temp;
-	temp.loadFromFile(txtpath + "Gates/And2.png");
+	temp.loadFromFile(txtpath + "Gates/Nowe/AND.png");
 	temp.createMaskFromColor(Color(255, 0, 255));
 	AND2Texture.loadFromImage(temp);
 
@@ -130,7 +130,7 @@ void Game::LoadLevel(std::string path)
 			// bramka logiczna
 		case 1:
 			file >> elem.pixelCount;
-			file >> 
+			//file >> 
 			break;
 		}
 		elem.elemType = type;

@@ -20,6 +20,38 @@ void Menu::addOption(string newOption)
 	}
 }
 
+void Menu::addText(string newText, int size)
+{
+	String temp(newText);
+	Text * text = new Text(temp, *fontPointer, size);
+
+	TextList.push_back(text);
+
+	FloatRect textRect = text->getGlobalBounds();
+	Vector2u windowSize = window->getSize();
+	text->setPosition((windowSize.x / 2.0f) - (textRect.width / 2.0f), 0);
+
+	int border = windowSize.y / 2.0f + 20;
+	for (auto it = TextList.rbegin(); it != TextList.rend(); ++it)
+	{
+		textRect = (*it)->getGlobalBounds();
+		(*it)->setPosition(textRect.left, border - textRect.height);
+		border -= (textRect.height + 50);
+	}
+}
+
+void Menu::changeText(string newtext)
+{
+	String temp(newtext);
+	Text * text = new Text(temp, *fontPointer, 60);
+
+	FloatRect textRect = text->getGlobalBounds();
+	Vector2u windowSize = window->getSize();
+	text->setPosition((windowSize.x / 2.0f) - (textRect.width / 2.0f), 0);
+
+	window->draw(*text);
+}
+
 void Menu::setFont(Font * font)
 {
 	fontPointer = font;
@@ -90,6 +122,7 @@ int Menu::optionUpdate()
 
 		++optionIndex;
 	}
+	clicked = false;
 	return -1;
 }
 
@@ -97,6 +130,10 @@ void Menu::Draw()
 {
 	window->draw(*background);
 	for (auto text : textVector)
+	{
+		window->draw(*text);
+	}
+	for (auto text : TextList)
 	{
 		window->draw(*text);
 	}

@@ -10,6 +10,7 @@ class Menu
 	RenderWindow * window;
 	Font * fontPointer;
 	list<Text *> textVector;
+	list<Text*> TextList;
 	Color hoverColor;
 	Color defaultColor;
 
@@ -31,7 +32,9 @@ public:
 
 	void setFont(Font * font);
 	void addOption(string newOption);
-	
+	void addText(string newText, int size);
+	void changeText(string text);
+
 	void setColor(Color color, Colours flag);
 	
 	int pollMenu();
@@ -39,6 +42,9 @@ public:
 	~Menu()
 	{
 		for (auto elem : textVector)
+			delete elem;
+	
+		for (auto elem : TextList)
 			delete elem;
 
 		delete background;

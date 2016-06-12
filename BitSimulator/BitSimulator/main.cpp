@@ -9,6 +9,7 @@
 #include "BitTrack.h"
 #include "Menu.h"
 #include <string>
+#include <sstream>
 
 void Error(string errorText)
 {
@@ -24,24 +25,53 @@ enum AppStates
 	EndGameScreen,
 	Highscores,
 	AuthorScreen,
-	Settings
+	Settings,
+	Counter
 };
 int main(int argc, char **argv)
 {
-	RenderWindow Window(VideoMode(1024, 768), "BitSimulator", Style::Default);
-	Window.setKeyRepeatEnabled(false);
+	bool runApp = true;
+	srand(time(NULL));
+
 	Font bellfort;
 	if (!bellfort.loadFromFile(fntpath + "bellfort.otf"))
+	{
 		Error("Couldn't load font file.");
+		runApp = false;
+	}
+
+	vector<Music*> musicList;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		musicList.push_back(new Music());
+		ostringstream ss;
+		ss << i;
+		string str = ss.str();
+		if (!musicList[i]->openFromFile(txtpath + "../Music/Music" + str + ".ogg"))
+		{
+			Error("Couldn't load music file");
+			runApp = false;
+			break;
+		}
+	}
 	
-	bool runApp = true;
+
+	RenderWindow Window(VideoMode(1024, 768), "BitSimulator", Style::Default);
+	Window.setKeyRepeatEnabled(false);
+	
 	Menu * mainMenu = nullptr;
 	Menu * lvlPicker = nullptr;
+	Menu * Authors = nullptr;
+	Menu * Counter = nullptr;
+
 	Game * game = nullptr;
 	try
 	{
 		lvlPicker = new Menu(&Window, &bellfort);
 		mainMenu = new Menu(&Window, &bellfort);
+		Authors = new Menu(&Window, &bellfort);
+		Counter = new Menu(&Window, &bellfort);
 		game = new Game(&Window, &bellfort);
 	}
 	catch (exception &e)
@@ -50,6 +80,7 @@ int main(int argc, char **argv)
 	}
 	mainMenu->addOption("New Game");
 	mainMenu->addOption("Highscores");
+	mainMenu->addOption("Authors");
 	mainMenu->addOption("Exit");
 
 	lvlPicker->addOption("Level 1");
@@ -58,6 +89,17 @@ int main(int argc, char **argv)
 	lvlPicker->addOption("Level 4");
 	lvlPicker->addOption("Level 5");
 	lvlPicker->addOption("Level 6");
+
+	Authors->addOption("Back to menu             ");
+	Authors->addText("Authors:", 120);
+	Authors->addText(" ", 120);
+	Authors->addText(" ", 120);
+	Authors->addText("Aleksander Krawiec", 70);
+	Authors->addText("Bartosz Kowalski", 70);
+
+	int numberofmusic = (rand() % 7) + 1;
+	musicList[numberofmusic]->setVolume(30);
+	musicList[numberofmusic]->play();
 
 	int levelPicked = 0;
 	AppStates state = AppStates::mainMenu;
@@ -74,7 +116,9 @@ int main(int argc, char **argv)
 				break;
 			case 1: state = AppStates::Highscores;
 				break;
-			case 2: runApp = false;
+			case 2: state = AppStates::AuthorScreen;
+				break;
+			case 3: runApp = false;
 				break;
 			}
 			break;
@@ -99,11 +143,17 @@ int main(int argc, char **argv)
 			break;
 		case::AppStates::Settings:
 			break;
+		case::AppStates::AuthorScreen:
+			if (Authors->pollMenu() == 0)
+				state = AppStates::mainMenu;
+			break;
 		}
 	}
 	delete mainMenu;
 	delete game;
 	delete lvlPicker;
+	delete Authors;
+	delete Counter;
 	return EXIT_SUCCESS;
 }
 
