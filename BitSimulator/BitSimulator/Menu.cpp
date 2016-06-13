@@ -60,11 +60,11 @@ void Menu::changeText(string newtext)
 	String temp(newtext);
 	Text * text = new Text(temp, *fontPointer, 60);
 
+	CounterList.push_back(text);
+
 	FloatRect textRect = text->getGlobalBounds();
 	Vector2u windowSize = window->getSize();
 	text->setPosition((windowSize.x / 2.0f) - (textRect.width / 2.0f), (windowSize.y / 2.0f) - (textRect.height/2.0f));
-
-	window->draw(*text);
 }
 
 void Menu::setFont(Font * font)
@@ -139,6 +139,18 @@ int Menu::optionUpdate()
 	}
 	clicked = false;
 	return -1;
+}
+
+void Menu::DrawCounter()
+{
+	window->clear();
+	for(auto text : CounterList)
+	{
+		window->draw(*text);
+		window->display();
+		sleep(milliseconds(1000));
+		window->clear();
+	}
 }
 
 void Menu::Draw()

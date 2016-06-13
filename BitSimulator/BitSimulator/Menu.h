@@ -9,8 +9,11 @@ class Menu
 {
 	RenderWindow * window;
 	Font * fontPointer;
+
 	list<Text *> textVector;
 	list<Text*> TextList;
+	list<Text *> CounterList;
+
 	Color hoverColor;
 	Color defaultColor;
 
@@ -43,6 +46,7 @@ public:
 	void setColor(Color color, Colours flag);
 	
 	int pollMenu();
+	void DrawCounter();
 	void Draw();
 	~Menu()
 	{

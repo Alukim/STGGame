@@ -103,7 +103,12 @@ int main(int argc, char **argv)
 	Authors->addText("Aleksander Krawiec", 70);
 	Authors->addText("Bartosz Kowalski", 70);
 
-	int numberofmusic = (rand() % 8) + 1;
+	Counter->changeText("3");
+	Counter->changeText("2");
+	Counter->changeText("1");
+	Counter->changeText("GO");
+
+	int numberofmusic = (rand() % 7) + 1;
 	musicList[numberofmusic]->setVolume(30);
 	musicList[numberofmusic]->setLoop(true);
 	musicList[numberofmusic]->play();
@@ -136,7 +141,7 @@ int main(int argc, char **argv)
 			else
 			{
 				// za³¹cz level
-				state = AppStates::Play;
+				state = AppStates::Counter;
 			}
 			break;
 		case AppStates::Play:
@@ -153,6 +158,10 @@ int main(int argc, char **argv)
 		case::AppStates::AuthorScreen:
 			if (Authors->pollMenu() == 0)
 				state = AppStates::mainMenu;
+			break;
+		case::AppStates::Counter:
+			Counter->DrawCounter();
+			state = AppStates::Play;
 			break;
 		}
 	}
