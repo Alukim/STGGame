@@ -47,6 +47,7 @@ void Menu::addImage(Image* title)
 	texture.loadFromImage(*title);
 	sprite = new Sprite();
 	sprite->setTexture(texture);
+	sprite->scale(0.7f, 0.7f);
 
 	FloatRect spriteRect = sprite->getGlobalBounds();
 	Vector2u windowSize = window->getSize();
@@ -155,11 +156,11 @@ void Menu::DrawCounter()
 
 void Menu::Draw()
 {
-	if(titleImage != nullptr)
+	window->draw(*background);
+	if (titleImage != nullptr)
 	{
 		window->draw(*sprite);
 	}
-	window->draw(*background);
 	for (auto text : textVector)
 	{
 		window->draw(*text);
